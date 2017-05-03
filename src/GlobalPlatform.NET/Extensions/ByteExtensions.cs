@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace GlobalPlatform.NET.Extensions
 {
-    internal static class ByteExtensions
+    public static class ByteExtensions
     {
         public static byte LengthChecked(this byte[] array) => checked((byte)array.Length);
 
