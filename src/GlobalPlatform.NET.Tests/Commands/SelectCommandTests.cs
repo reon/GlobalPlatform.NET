@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
-using GlobalPlatform.NET.Commands.Select;
+﻿using System.Linq;
+using FluentAssertions;
+using GlobalPlatform.NET.Commands;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace GlobalPlatform.NET.Tests.Commands
 {

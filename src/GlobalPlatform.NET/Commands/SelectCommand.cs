@@ -1,13 +1,14 @@
-﻿using GlobalPlatform.NET.Reference;
+﻿using System;
+using GlobalPlatform.NET.Reference;
 
-namespace GlobalPlatform.NET.Commands.Select
+namespace GlobalPlatform.NET.Commands
 {
     /// <summary>
     /// The SELECT command is used for selecting an Application. The OPEN only processes SELECT
     /// commands indicating the SELECT [by name] option. All options other than SELECT [by name]
     /// shall be passed to the currently selected Security Domain or Application on the indicated
     /// logical channel.
-    /// <para> Based on v2.3 of the GlobalPlatform Card Specification. </para>
+    /// <para> Based on section 11.9 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
     public class SelectCommand : IApduBuilder, ISelectCommandP1Picker, ISelectCommandP2Picker, ISelectCommandApplicationPicker
     {
@@ -43,9 +44,14 @@ namespace GlobalPlatform.NET.Commands.Select
             return this;
         }
 
-        public IApduBuilder Select(byte[] application)
+        public IApduBuilder Select(byte[] aid)
         {
-            this.application = application;
+            if (aid.Length < 5 || aid.Length > 16)
+            {
+                throw new ArgumentException("Length must be between 5-16 bytes (inclusive).", nameof(aid));
+            }
+
+            this.application = this.application;
 
             return this;
         }
@@ -78,6 +84,6 @@ namespace GlobalPlatform.NET.Commands.Select
     {
         IApduBuilder SelectIssuerSecurityDomain();
 
-        IApduBuilder Select(byte[] application);
+        IApduBuilder Select(byte[] aid);
     }
 }
