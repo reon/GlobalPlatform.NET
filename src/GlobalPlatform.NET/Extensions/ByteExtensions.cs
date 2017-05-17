@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GlobalPlatform.NET.Reference;
 
 namespace GlobalPlatform.NET.Extensions
 {
@@ -35,7 +34,7 @@ namespace GlobalPlatform.NET.Extensions
         /// <param name="bytes"></param>
         /// <param name="range"></param>
         /// <returns></returns>
-        public static byte AddTag(this ICollection<byte> bytes, Tag tag, params byte[] data)
+        public static byte AddTag(this ICollection<byte> bytes, byte tag, params byte[] data)
         {
             bytes.Add((byte)tag);
 

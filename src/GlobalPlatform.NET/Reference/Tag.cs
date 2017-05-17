@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GlobalPlatform.NET.Reference
 {
@@ -42,8 +40,8 @@ namespace GlobalPlatform.NET.Reference
         MaximumLengthOfDataFieldInCommandMessage = 0x9F65,
         SecureChannelProtocolInformation = 0xA0,
         ProprietaryData = 0xA5,
-        ControlReferenceTemplateForDigitalSignature = 0xB6,
         CCT = 0xB4,
+        ControlReferenceTemplateForDigitalSignature = 0xB6,
         CT = 0xB8,
         CRT = 0xB9,
         SequenceCounter = 0xC1,
@@ -61,9 +59,7 @@ namespace GlobalPlatform.NET.Reference
         LoadFileDataBlockFormatID = 0xCD,
         ExecutableLoadFileVersionNumber = 0xCE,
         ImplicitSelectionParameter = 0xCF,
-        KeyIdentifier = 0xD0,
         OffCardEntitySessionKey = 0xD1,
-        KeyVersionNumber = 0xD2,
         CurrentSecurityLevel = 0xD3,
         CipheredLoadFileDataBlock = 0xD4,
         LoadFileDataBlockParameters = 0xDD,

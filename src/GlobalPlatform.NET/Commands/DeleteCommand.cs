@@ -1,46 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using GlobalPlatform.NET.Commands.Abstractions;
+using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
 
 namespace GlobalPlatform.NET.Commands
 {
+    public interface IDeleteCommandScopePicker
+    {
+        IDeleteCommandApplicationPicker DeleteCardContent();
+
+        IDeleteCommandKeyPicker DeleteKey();
+    }
+
+    public interface IDeleteCommandApplicationPicker
+    {
+        IDeleteCommandTokenPicker WithAID(byte[] aid);
+    }
+
+    public interface IDeleteCommandTokenPicker : IApduBuilder
+    {
+        IApduBuilder UsingToken(byte[] token);
+    }
+
+    public interface IDeleteCommandKeyPicker : IApduBuilder
+    {
+        IDeleteCommandKeyPicker WithIdentifier(byte keyIdentifier);
+
+        IDeleteCommandKeyPicker WithVersionNumber(byte keyVersionNumber);
+    }
+
     /// <summary>
     /// The DELETE command is used to delete a uniquely identifiable object such as an Executable
     /// Load File, an Application, an Executable Load File and its related Applications or a key. In
     /// order to delete an object, the object shall be uniquely identifiable by the selected Application.
     /// <para>Based on section 11.2 of the v2.3 GlobalPlatform Card Specification.</para>
     /// </summary>
-    public class DeleteCommand : IApduBuilder, IDeleteCommandP1Picker, IDeleteCommandP2Picker, IDeleteCommandScopePicker, IDeleteCommandApplicationPicker, IDeleteCommandKeyPicker
+    public class DeleteCommand : CommandBase<DeleteCommand, DeleteCommand.P1, DeleteCommand.P2, IDeleteCommandScopePicker>,
+        IDeleteCommandScopePicker,
+        IDeleteCommandApplicationPicker,
+        IDeleteCommandTokenPicker,
+        IDeleteCommandKeyPicker
     {
-        private byte p1;
-
-        private byte p2;
-
+        private DeleteCommandScope scope;
         private byte[] application;
-
+        private byte[] token = new byte[0];
         private byte keyIdentifier;
         private byte keyVersionNumber;
 
-        private DeleteCommandScope scope;
-
-        /// <summary>
-        /// Starts building the command.
-        /// </summary>
-        public static IDeleteCommandP1Picker Build => new DeleteCommand();
-
-        public IDeleteCommandP2Picker WithP1(byte p1)
+        public enum P1 : byte
         {
-            this.p1 = p1;
-
-            return this;
+            LastOrOnlyCommand = 0b00000000,
+            MoreDeleteCommands = 0b10000000,
         }
 
-        public IDeleteCommandScopePicker WithP2(byte p2)
+        public enum P2 : byte
         {
-            this.p2 = p2;
+            DeleteObject = 0b00000000,
+            DeleteObjectAndRelatedObjects = 0b10000000,
+        }
 
-            return this;
+        public enum Tag : byte
+        {
+            ExecutableLoadFileOrApplicationAID = 0x4F,
+            DeleteToken = 0x9E,
+            KeyIdentifier = 0xD0,
+            KeyVersionNumber = 0xD2,
         }
 
         private enum DeleteCommandScope
@@ -48,21 +75,48 @@ namespace GlobalPlatform.NET.Commands
             CardContent,
             Key
         }
-        public IDeleteCommandApplicationPicker WithCardContentScope()
+
+        public override IP2Picker<P2, IDeleteCommandScopePicker> WithP1(byte p1)
+        {
+            this.p1 = p1;
+
+            return this;
+        }
+
+        public override IP2Picker<P2, IDeleteCommandScopePicker> WithP1(P1 p1) => this.WithP1((byte)p1);
+
+        public override IDeleteCommandScopePicker WithP2(byte p2)
+        {
+            this.p2 = p2;
+
+            return this;
+        }
+
+        public override IDeleteCommandScopePicker WithP2(P2 p2) => this.WithP2((byte)p2);
+
+        public IDeleteCommandApplicationPicker DeleteCardContent()
         {
             this.scope = DeleteCommandScope.CardContent;
 
             return this;
         }
 
-        public IDeleteCommandKeyPicker WithKeyScope()
+        public IDeleteCommandKeyPicker DeleteKey()
         {
             this.scope = DeleteCommandScope.Key;
 
             return this;
         }
 
-        public IApduBuilder Delete(byte[] aid)
+        /// <summary>
+        /// The identity of the Application or Executable Load File to delete shall be specified
+        /// using the tag for an AID ('4F') followed by a length and the AID of the Application or
+        /// Executable Load File. When simultaneously deleting an Executable Load File and all its
+        /// related Applications, only the identity of the Executable Load File shall be provided.
+        /// </summary>
+        /// <param name="aid"></param>
+        /// <returns></returns>
+        public IDeleteCommandTokenPicker WithAID(byte[] aid)
         {
             if (aid.Length < 5 || aid.Length > 16)
             {
@@ -74,7 +128,33 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public IDeleteCommandKeyPicker DeleteIdentifier(byte identifier)
+        /// <summary>
+        /// The presence of the Delete Token depends on the Card Issuer’s policy.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public IApduBuilder UsingToken(byte[] token)
+        {
+            if (!token.Any())
+            {
+                throw new ArgumentException("Length must be at least 1.", nameof(token));
+            }
+
+            this.token = token;
+
+            return this;
+        }
+
+        /// <summary>
+        /// A single key is deleted when both the Key Identifier ('D0') and the Key Version Number
+        /// ('D2') are provided in the DELETE command message data field. Multiple keys may be
+        /// deleted if one of these values is omitted (i.e. all keys with the specified Key
+        /// Identifier or Key Version Number). The options available for omitting these values are
+        /// conditional on the Issuer’s policy.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public IDeleteCommandKeyPicker WithIdentifier(byte identifier)
         {
             if (identifier < 1 || identifier > 0x7F)
             {
@@ -85,7 +165,17 @@ namespace GlobalPlatform.NET.Commands
 
             return this;
         }
-        public IDeleteCommandKeyPicker DeleteVersionNumber(byte versionNumber)
+
+        /// <summary>
+        /// A single key is deleted when both the Key Identifier ('D0') and the Key Version Number
+        /// ('D2') are provided in the DELETE command message data field. Multiple keys may be
+        /// deleted if one of these values is omitted (i.e. all keys with the specified Key
+        /// Identifier or Key Version Number). The options available for omitting these values are
+        /// conditional on the Issuer’s policy.
+        /// </summary>
+        /// <param name="versionNumber"></param>
+        /// <returns></returns>
+        public IDeleteCommandKeyPicker WithVersionNumber(byte versionNumber)
         {
             if (versionNumber < 1 || versionNumber > 0x7F)
             {
@@ -97,17 +187,21 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public Apdu ToApdu()
+        public override Apdu Build()
         {
-            var apdu = Apdu.Build(ApduClass.Iso7816, ApduInstruction.Delete, this.p1, this.p2);
+            var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Delete, this.p1, this.p2);
 
             var data = new List<byte>();
 
             switch (this.scope)
             {
                 case DeleteCommandScope.CardContent:
-                    data.Add(0x4F);
-                    data.AddRangeWithLength(this.application);
+                    data.AddTag((byte)Tag.ExecutableLoadFileOrApplicationAID, this.application);
+
+                    if (this.token.Any())
+                    {
+                        data.AddTag((byte)Tag.DeleteToken, this.token);
+                    }
                     break;
 
                 case DeleteCommandScope.Key:
@@ -117,11 +211,11 @@ namespace GlobalPlatform.NET.Commands
                     }
                     if (this.keyIdentifier > 0)
                     {
-                        data.AddTag(Tag.KeyIdentifier, this.keyIdentifier);
+                        data.AddTag((byte)Tag.KeyIdentifier, this.keyIdentifier);
                     }
                     if (this.keyVersionNumber > 0)
                     {
-                        data.AddTag(Tag.KeyVersionNumber, this.keyVersionNumber);
+                        data.AddTag((byte)Tag.KeyVersionNumber, this.keyVersionNumber);
                     }
                     break;
             }
@@ -130,44 +224,5 @@ namespace GlobalPlatform.NET.Commands
 
             return apdu;
         }
-
-        public static class P1
-        {
-            public static byte LastOrOnlyCommand = 0b00000000;
-            public static byte MoreDeleteCommands = 0b10000000;
-        }
-
-        public static class P2
-        {
-            public static byte DeleteObject = 0b00000000;
-            public static byte DeleteObjectAndRelatedObjects = 0b10000000;
-        }
-    }
-
-    public interface IDeleteCommandP1Picker
-    {
-        IDeleteCommandP2Picker WithP1(byte p1);
-    }
-
-    public interface IDeleteCommandP2Picker
-    {
-        IDeleteCommandScopePicker WithP2(byte p2);
-    }
-
-    public interface IDeleteCommandScopePicker
-    {
-        IDeleteCommandApplicationPicker WithCardContentScope();
-        IDeleteCommandKeyPicker WithKeyScope();
-    }
-
-    public interface IDeleteCommandApplicationPicker
-    {
-        IApduBuilder Delete(byte[] aid);
-    }
-
-    public interface IDeleteCommandKeyPicker : IApduBuilder
-    {
-        IDeleteCommandKeyPicker DeleteIdentifier(byte keyIdentifier);
-        IDeleteCommandKeyPicker DeleteVersionNumber(byte keyVersionNumber);
     }
 }

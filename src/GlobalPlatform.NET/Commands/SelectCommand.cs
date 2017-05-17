@@ -1,41 +1,70 @@
 ﻿using System;
+using GlobalPlatform.NET.Commands.Abstractions;
+using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Reference;
 
 namespace GlobalPlatform.NET.Commands
 {
+    public interface ISelectCommandApplicationPicker
+    {
+        /// <summary>
+        /// The data field of the command shall contain the AID of the Application to be selected.
+        /// The Lc and data field of the SELECT command may be omitted if the Issuer Security Domain
+        /// is being selected.
+        /// </summary>
+        /// <returns></returns>
+        IApduBuilder SelectIssuerSecurityDomain();
+
+        /// <summary>
+        /// The data field of the command shall contain the AID of the Application to be selected.
+        /// The Lc and data field of the SELECT command may be omitted if the Issuer Security Domain
+        /// is being selected.
+        /// </summary>
+        /// <param name="application"></param>
+        /// <returns></returns>
+        IApduBuilder Select(byte[] application);
+    }
+
     /// <summary>
     /// The SELECT command is used for selecting an Application. The OPEN only processes SELECT
     /// commands indicating the SELECT [by name] option. All options other than SELECT [by name]
     /// shall be passed to the currently selected Security Domain or Application on the indicated
     /// logical channel.
-    /// <para> Based on section 11.9 of the v2.3 GlobalPlatform Card Specification. </para>
+    /// <para>Based on section 11.9 of the v2.3 GlobalPlatform Card Specification.</para>
     /// </summary>
-    public class SelectCommand : IApduBuilder, ISelectCommandP1Picker, ISelectCommandP2Picker, ISelectCommandApplicationPicker
+    public class SelectCommand : CommandBase<SelectCommand, SelectCommand.P1, SelectCommand.P2, ISelectCommandApplicationPicker>,
+        ISelectCommandApplicationPicker
     {
-        private byte p1;
-
-        private byte p2;
-
         private byte[] application;
 
-        /// <summary>
-        /// Starts building the command. 
-        /// </summary>
-        public static ISelectCommandP1Picker Build => new SelectCommand();
+        public enum P1 : byte
+        {
+            SelectByName = 0b00000100,
+        }
 
-        public ISelectCommandP2Picker WithP1(byte p1)
+        public enum P2
+        {
+            FirstOrOnlyOccurrence = 0b00000000,
+            NextOccurrence = 0b00000010,
+        }
+
+        public override IP2Picker<P2, ISelectCommandApplicationPicker> WithP1(byte p1)
         {
             this.p1 = p1;
 
             return this;
         }
 
-        public ISelectCommandApplicationPicker WithP2(byte p2)
+        public override IP2Picker<P2, ISelectCommandApplicationPicker> WithP1(P1 p1) => this.WithP1((byte)p1);
+
+        public override ISelectCommandApplicationPicker WithP2(byte p2)
         {
             this.p2 = p2;
 
             return this;
         }
+
+        public override ISelectCommandApplicationPicker WithP2(P2 p2) => this.WithP2((byte)p2);
 
         public IApduBuilder SelectIssuerSecurityDomain()
         {
@@ -44,46 +73,18 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public IApduBuilder Select(byte[] aid)
+        public IApduBuilder Select(byte[] application)
         {
-            if (aid.Length < 5 || aid.Length > 16)
+            if (application.Length < 5 || application.Length > 16)
             {
-                throw new ArgumentException("Length must be between 5-16 bytes (inclusive).", nameof(aid));
+                throw new ArgumentException("Length must be between 5-16 bytes (inclusive).", nameof(application));
             }
 
-            this.application = this.application;
+            this.application = application;
 
             return this;
         }
 
-        public Apdu ToApdu() => Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, this.p1, this.p2, this.application);
-
-        public static class P1
-        {
-            public static byte SelectByName = 0b00000100;
-        }
-
-        public static class P2
-        {
-            public static byte FirstOrOnlyOccurrence = 0b00000000;
-            public static byte NextOccurrence = 0b00000010;
-        }
-    }
-
-    public interface ISelectCommandP1Picker
-    {
-        ISelectCommandP2Picker WithP1(byte p1);
-    }
-
-    public interface ISelectCommandP2Picker
-    {
-        ISelectCommandApplicationPicker WithP2(byte p2);
-    }
-
-    public interface ISelectCommandApplicationPicker
-    {
-        IApduBuilder SelectIssuerSecurityDomain();
-
-        IApduBuilder Select(byte[] aid);
+        public override Apdu Build() => Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, this.p1, this.p2, this.application);
     }
 }
