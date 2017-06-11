@@ -1,5 +1,4 @@
-﻿using System;
-using GlobalPlatform.NET.Commands.Interfaces;
+﻿using GlobalPlatform.NET.Commands.Interfaces;
 
 namespace GlobalPlatform.NET.Commands.Abstractions
 {
@@ -18,14 +17,14 @@ namespace GlobalPlatform.NET.Commands.Abstractions
         /// </summary>
         public static IP1Picker<TP1, IP2Picker<TP2, TBuilder>> Create => new TCommand();
 
+        public abstract Apdu Build();
+
         public abstract IP2Picker<TP2, TBuilder> WithP1(byte p1);
 
         public abstract IP2Picker<TP2, TBuilder> WithP1(TP1 p1);
 
-        public abstract TBuilder WithP2(byte p1);
+        public abstract TBuilder WithP2(byte p2);
 
-        public abstract TBuilder WithP2(TP2 p1);
-
-        public abstract Apdu Build();
+        public abstract TBuilder WithP2(TP2 p2);
     }
 }

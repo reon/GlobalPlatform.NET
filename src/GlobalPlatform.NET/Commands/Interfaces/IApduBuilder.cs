@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GlobalPlatform.NET.Commands.Interfaces
+﻿namespace GlobalPlatform.NET.Commands.Interfaces
 {
     public interface IApduBuilder
     {

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using GlobalPlatform.NET.Commands.Interfaces;
+﻿using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Reference;
+using System;
+using System.Linq;
 
 namespace GlobalPlatform.NET.Commands
 {
@@ -28,13 +28,6 @@ namespace GlobalPlatform.NET.Commands
         /// </summary>
         public static IP1P2Picker<P1P2, IApduBuilder> Create => new GetDataCommand();
 
-        public IApduBuilder WithP1P2(P1P2 p1p2)
-        {
-            this.p1p2 = p1p2;
-
-            return this;
-        }
-
         public Apdu Build()
         {
             var bytes = BitConverter.GetBytes((ushort)this.p1p2);
@@ -48,6 +41,13 @@ namespace GlobalPlatform.NET.Commands
             byte p2 = bytes.Last();
 
             return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetData, p1, p2);
+        }
+
+        public IApduBuilder WithP1P2(P1P2 p1p2)
+        {
+            this.p1p2 = p1p2;
+
+            return this;
         }
     }
 }

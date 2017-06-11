@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GlobalPlatform.NET.Extensions
 {
     internal static class ByteExtensions
     {
-        /// <summary>
-        /// Returns the length of the array, as a checked byte.
-        /// </summary>
-        /// <param name="array"></param>
-        /// <returns></returns>
-        public static byte LengthChecked(this byte[] array) => checked((byte)array.Length);
-
         /// <summary>
         /// Adds a range of bytes to the collection, prefixed by a single byte denoting the range's length.
         /// </summary>
@@ -45,5 +37,12 @@ namespace GlobalPlatform.NET.Extensions
 
             return length;
         }
+
+        /// <summary>
+        /// Returns the length of the array, as a checked byte.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static byte LengthChecked(this byte[] array) => checked((byte)array.Length);
     }
 }

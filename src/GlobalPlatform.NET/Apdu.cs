@@ -1,28 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using GlobalPlatform.NET.Extensions;
+﻿using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
-
 using System;
+using System.Collections.Generic;
 
 namespace GlobalPlatform.NET
 {
     public class Apdu
     {
-        public ApduClass CLA { get; set; }
-
-        public ApduInstruction INS { get; set; }
-
-        public byte P1 { get; set; }
-
-        public byte P2 { get; set; }
-
-        public byte Lc => this.CommandData.LengthChecked();
-
-        public byte[] CommandData { get; set; }
-
-        public byte Le { get; set; }
-
         public byte[] Buffer
         {
             get
@@ -42,6 +26,20 @@ namespace GlobalPlatform.NET
                 return buffer.ToArray();
             }
         }
+
+        public ApduClass CLA { get; set; }
+
+        public byte[] CommandData { get; set; }
+
+        public ApduInstruction INS { get; set; }
+
+        public byte Lc => this.CommandData.LengthChecked();
+
+        public byte Le { get; set; }
+
+        public byte P1 { get; set; }
+
+        public byte P2 { get; set; }
 
         public static Apdu Build(ApduClass cla, ApduInstruction ins, byte p1, byte p2, params byte[] data)
         {

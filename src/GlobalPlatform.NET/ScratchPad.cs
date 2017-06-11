@@ -1,6 +1,5 @@
-﻿using System;
+﻿using GlobalPlatform.NET.Commands;
 using System.Linq;
-using GlobalPlatform.NET.Commands;
 
 namespace GlobalPlatform.NET
 {

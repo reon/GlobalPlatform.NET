@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GlobalPlatform.NET.Commands.Interfaces
+﻿namespace GlobalPlatform.NET.Commands.Interfaces
 {
     public interface IP1P2Picker<TP1P2, TBuilder>
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GlobalPlatform.NET.Reference
+﻿namespace GlobalPlatform.NET.Reference
 {
     public enum Tag
     {
