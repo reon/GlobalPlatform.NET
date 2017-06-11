@@ -11,7 +11,7 @@ namespace GlobalPlatform.NET.Commands
         IApduBuilder WithFilter(byte[] applicationFilter);
     }
 
-    public class GetStatusCommand : CommandBase<GetStatusCommand, GetStatusCommand.P1, GetStatusCommand.P2, IApplicationFilter>,
+    public class GetStatusCommand : CommandP1P2Base<GetStatusCommand, GetStatusCommand.P1, GetStatusCommand.P2, IApplicationFilter>,
             IApplicationFilter
     {
         private byte[] applicationFilter;

@@ -38,7 +38,7 @@ namespace GlobalPlatform.NET.Commands
     /// order to delete an object, the object shall be uniquely identifiable by the selected Application.
     /// <para>Based on section 11.2 of the v2.3 GlobalPlatform Card Specification.</para>
     /// </summary>
-    public class DeleteCommand : CommandBase<DeleteCommand, DeleteCommand.P1, DeleteCommand.P2, IDeleteCommandScopePicker>,
+    public class DeleteCommand : CommandP1P2Base<DeleteCommand, DeleteCommand.P1, DeleteCommand.P2, IDeleteCommandScopePicker>,
         IDeleteCommandScopePicker,
         IDeleteCommandApplicationPicker,
         IDeleteCommandTokenPicker,

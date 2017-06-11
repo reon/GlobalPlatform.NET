@@ -32,7 +32,7 @@ namespace GlobalPlatform.NET.Commands
     /// logical channel.
     /// <para>Based on section 11.9 of the v2.3 GlobalPlatform Card Specification.</para>
     /// </summary>
-    public class SelectCommand : CommandBase<SelectCommand, SelectCommand.P1, SelectCommand.P2, ISelectCommandApplicationPicker>,
+    public class SelectCommand : CommandP1P2Base<SelectCommand, SelectCommand.P1, SelectCommand.P2, ISelectCommandApplicationPicker>,
         ISelectCommandApplicationPicker
     {
         private byte[] application;
