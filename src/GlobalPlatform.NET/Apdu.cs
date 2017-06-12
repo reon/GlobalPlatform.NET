@@ -11,7 +11,7 @@ namespace GlobalPlatform.NET
         {
             get
             {
-                var buffer = new List<byte>()
+                var buffer = new List<byte>
                 {
                     (byte)this.CLA,
                     (byte)this.INS,
@@ -48,7 +48,7 @@ namespace GlobalPlatform.NET
                 throw new ArgumentException("Data exceeds 255 bytes.", nameof(data));
             }
 
-            return new Apdu()
+            return new Apdu
             {
                 CLA = cla,
                 INS = ins,
