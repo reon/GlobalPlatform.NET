@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using GlobalPlatform.NET.Commands;
+using GlobalPlatform.NET.Reference;
 
 namespace GlobalPlatform.NET
 {
@@ -71,6 +72,23 @@ namespace GlobalPlatform.NET
                 .WithP1(SelectCommand.P1.SelectByName)
                 .WithP2(SelectCommand.P2.NextOccurrence)
                 .Select(aid)
+                .Build();
+
+            SetStatusCommand.Create
+                .SetIssuerSecurityDomainStatus()
+                .To(CardLifeCycleCoding.Initialized)
+                .Build();
+
+            SetStatusCommand.Create
+                .SetSecurityDomainStatus()
+                .To(SecurityDomainLifeCycleCoding.Personalized)
+                .For(aid)
+                .Build();
+
+            SetStatusCommand.Create
+                .SetApplicationStatus()
+                .To(ApplicationLifeCycleCoding.Selectable)
+                .For(aid)
                 .Build();
         }
     }
