@@ -1,10 +1,9 @@
-﻿using GlobalPlatform.NET.Commands.Abstractions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace GlobalPlatform.NET.Commands
 {
