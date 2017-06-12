@@ -36,7 +36,7 @@ namespace GlobalPlatform.NET.Commands
     /// The DELETE command is used to delete a uniquely identifiable object such as an Executable
     /// Load File, an Application, an Executable Load File and its related Applications or a key. In
     /// order to delete an object, the object shall be uniquely identifiable by the selected Application.
-    /// <para>Based on section 11.2 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// <para> Based on section 11.2 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
     public class DeleteCommand : CommandP1P2Base<DeleteCommand, DeleteCommand.P1, DeleteCommand.P2, IDeleteCommandScopePicker>,
         IDeleteCommandScopePicker,
@@ -76,7 +76,7 @@ namespace GlobalPlatform.NET.Commands
             Key
         }
 
-        public override Apdu Build()
+        public override IEnumerable<Apdu> Build()
         {
             var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Delete, this.p1, this.p2);
 
@@ -111,7 +111,7 @@ namespace GlobalPlatform.NET.Commands
 
             apdu.CommandData = data.ToArray();
 
-            return apdu;
+            yield return apdu;
         }
 
         public IDeleteCommandApplicationPicker DeleteCardContent()
@@ -129,7 +129,7 @@ namespace GlobalPlatform.NET.Commands
         }
 
         /// <summary>
-        /// The presence of the Delete Token depends on the Card Issuer’s policy.
+        /// The presence of the Delete Token depends on the Card Issuer’s policy. 
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>

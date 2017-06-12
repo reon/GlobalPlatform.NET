@@ -1,13 +1,15 @@
-﻿using GlobalPlatform.NET.Commands.Abstractions;
+﻿using System.Collections.Generic;
+using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
-using System.Collections.Generic;
 
 namespace GlobalPlatform.NET.Commands
 {
     public interface IApplicationFilter
     {
+        IApduBuilder WithNoFilter();
+
         IApduBuilder WithFilter(byte[] applicationFilter);
     }
 
@@ -35,7 +37,7 @@ namespace GlobalPlatform.NET.Commands
             ApplicationAID = 0x4F,
         }
 
-        public override Apdu Build()
+        public override IEnumerable<Apdu> Build()
         {
             var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetData, p1, p2);
 
@@ -45,7 +47,14 @@ namespace GlobalPlatform.NET.Commands
 
             apdu.CommandData = data.ToArray();
 
-            return apdu;
+            yield return apdu;
+        }
+
+        public IApduBuilder WithNoFilter()
+        {
+            this.applicationFilter = new byte[0];
+
+            return this;
         }
 
         public IApduBuilder WithFilter(byte[] applicationFilter)

@@ -2,6 +2,7 @@
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Reference;
 using System;
+using System.Collections.Generic;
 
 namespace GlobalPlatform.NET.Commands
 {
@@ -30,7 +31,7 @@ namespace GlobalPlatform.NET.Commands
     /// commands indicating the SELECT [by name] option. All options other than SELECT [by name]
     /// shall be passed to the currently selected Security Domain or Application on the indicated
     /// logical channel.
-    /// <para>Based on section 11.9 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// <para> Based on section 11.9 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
     public class SelectCommand : CommandP1P2Base<SelectCommand, SelectCommand.P1, SelectCommand.P2, ISelectCommandApplicationPicker>,
         ISelectCommandApplicationPicker
@@ -48,7 +49,10 @@ namespace GlobalPlatform.NET.Commands
             NextOccurrence = 0b00000010,
         }
 
-        public override Apdu Build() => Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, this.p1, this.p2, this.application);
+        public override IEnumerable<Apdu> Build()
+        {
+            yield return Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, this.p1, this.p2, this.application);
+        }
 
         public IApduBuilder Select(byte[] application)
         {

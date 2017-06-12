@@ -1,6 +1,7 @@
 ﻿using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Reference;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GlobalPlatform.NET.Commands
@@ -24,11 +25,11 @@ namespace GlobalPlatform.NET.Commands
         }
 
         /// <summary>
-        /// Starts building the command.
+        /// Starts building the command. 
         /// </summary>
         public static IP1P2Picker<P1P2, IApduBuilder> Create => new GetDataCommand();
 
-        public Apdu Build()
+        public IEnumerable<Apdu> Build()
         {
             var bytes = BitConverter.GetBytes((ushort)this.p1p2);
 
@@ -40,7 +41,7 @@ namespace GlobalPlatform.NET.Commands
             byte p1 = bytes.First();
             byte p2 = bytes.Last();
 
-            return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetData, p1, p2);
+            yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetData, p1, p2);
         }
 
         public IApduBuilder WithP1P2(P1P2 p1p2)
