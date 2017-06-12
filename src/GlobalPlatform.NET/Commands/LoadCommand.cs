@@ -24,7 +24,7 @@ namespace GlobalPlatform.NET.Commands
     {
         ILoadFileStructureBuilder WithDapBlock(byte[] securityDomainAID, byte[] signature);
 
-        ILoadCommandBlockSizePicker WithData(byte[] data);
+        ILoadCommandBlockSizePicker Load(byte[] data);
     }
 
     public class LoadCommand : CommandBase<LoadCommand, ILoadFileStructureBuilder>,
@@ -74,7 +74,7 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public ILoadCommandBlockSizePicker WithData(byte[] data)
+        public ILoadCommandBlockSizePicker Load(byte[] data)
         {
             this.data = data;
 

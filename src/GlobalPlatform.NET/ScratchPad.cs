@@ -44,12 +44,12 @@ namespace GlobalPlatform.NET
 
             LoadCommand.Create
                 .WithDapBlock(aid, Enumerable.Range(8, 8).Cast<byte>().ToArray())
-                .WithData(new byte[8192])
+                .Load(new byte[8192])
                 .WithBlockSize(0x80)
                 .Build();
 
             LoadCommand.Create
-                .WithData(new byte[4096])
+                .Load(new byte[4096])
                 .WithBlockSize(0xB0)
                 .Build();
 
