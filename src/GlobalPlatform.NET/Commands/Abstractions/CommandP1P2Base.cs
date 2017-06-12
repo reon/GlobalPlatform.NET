@@ -3,7 +3,7 @@
 namespace GlobalPlatform.NET.Commands.Abstractions
 {
     public abstract class CommandP1P2Base<TCommand, TP1, TP2, TBuilder> :
-        CommandBase<TCommand, TBuilder>,
+        CommandBase<TCommand, IP1Picker<TP1, IP2Picker<TP2, TBuilder>>>,
         IP1Picker<TP1, IP2Picker<TP2, TBuilder>>,
         IP2Picker<TP2, TBuilder>
         where TCommand : class, IP1Picker<TP1, IP2Picker<TP2, TBuilder>>, TBuilder, new()
