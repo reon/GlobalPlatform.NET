@@ -10,22 +10,6 @@ namespace GlobalPlatform.NET
 
         public ScratchPad()
         {
-            DeleteCommand.Create
-                .WithP1(DeleteCommand.P1.LastOrOnlyCommand)
-                .WithP2(DeleteCommand.P2.DeleteObjectAndRelatedObjects)
-                .DeleteCardContent()
-                .WithAID(aid)
-                .UsingToken(Enumerable.Range(8, 8).Cast<byte>().ToArray())
-                .Build();
-
-            DeleteCommand.Create
-                .WithP1(DeleteCommand.P1.LastOrOnlyCommand)
-                .WithP2(DeleteCommand.P2.DeleteObject)
-                .DeleteKey()
-                .WithIdentifier(2)
-                .WithVersionNumber(3)
-                .Build();
-
             GetDataCommand.Create
                 .WithP1P2(GetDataCommand.P1P2.ListApplications)
                 .Build();
@@ -60,18 +44,6 @@ namespace GlobalPlatform.NET
             ManageChannelCommand.Create
                 .CloseChannel()
                 .WithIdentifier(0x01)
-                .Build();
-
-            SelectCommand.Create
-                .WithP1(SelectCommand.P1.SelectByName)
-                .WithP2(SelectCommand.P2.FirstOrOnlyOccurrence)
-                .SelectIssuerSecurityDomain()
-                .Build();
-
-            SelectCommand.Create
-                .WithP1(SelectCommand.P1.SelectByName)
-                .WithP2(SelectCommand.P2.NextOccurrence)
-                .Select(aid)
                 .Build();
 
             SetStatusCommand.Create

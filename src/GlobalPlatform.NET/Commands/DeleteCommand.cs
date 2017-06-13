@@ -1,16 +1,33 @@
-﻿using GlobalPlatform.NET.Commands.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace GlobalPlatform.NET.Commands
 {
+    public interface IDeleteCommandScopePicker
+    {
+        IDeleteCommandApplicationPicker DeleteCardContent();
+
+        IDeleteCommandKeyPicker DeleteKey();
+    }
+
     public interface IDeleteCommandApplicationPicker
     {
-        IDeleteCommandTokenPicker WithAID(byte[] aid);
+        IDeleteCommandOptionsPicker WithAID(byte[] aid);
+    }
+
+    public interface IDeleteCommandOptionsPicker : IDeleteCommandTokenPicker
+    {
+        IDeleteCommandTokenPicker AndRelatedObjects();
+    }
+
+    public interface IDeleteCommandTokenPicker : IApduBuilder
+    {
+        IApduBuilder UsingToken(byte[] token);
     }
 
     public interface IDeleteCommandKeyPicker : IApduBuilder
@@ -20,28 +37,16 @@ namespace GlobalPlatform.NET.Commands
         IDeleteCommandKeyPicker WithVersionNumber(byte keyVersionNumber);
     }
 
-    public interface IDeleteCommandScopePicker
-    {
-        IDeleteCommandApplicationPicker DeleteCardContent();
-
-        IDeleteCommandKeyPicker DeleteKey();
-    }
-
-    public interface IDeleteCommandTokenPicker : IApduBuilder
-    {
-        IApduBuilder UsingToken(byte[] token);
-    }
-
     /// <summary>
     /// The DELETE command is used to delete a uniquely identifiable object such as an Executable
     /// Load File, an Application, an Executable Load File and its related Applications or a key. In
     /// order to delete an object, the object shall be uniquely identifiable by the selected Application.
     /// <para> Based on section 11.2 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
-    public class DeleteCommand : CommandP1P2Base<DeleteCommand, DeleteCommand.P1, DeleteCommand.P2, IDeleteCommandScopePicker>,
+    public class DeleteCommand : CommandBase<DeleteCommand, IDeleteCommandScopePicker>,
         IDeleteCommandScopePicker,
         IDeleteCommandApplicationPicker,
-        IDeleteCommandTokenPicker,
+        IDeleteCommandOptionsPicker,
         IDeleteCommandKeyPicker
     {
         private byte[] application;
@@ -49,18 +54,6 @@ namespace GlobalPlatform.NET.Commands
         private byte keyVersionNumber;
         private DeleteCommandScope scope;
         private byte[] token = new byte[0];
-
-        public enum P1 : byte
-        {
-            LastOrOnlyCommand = 0b00000000,
-            MoreDeleteCommands = 0b10000000,
-        }
-
-        public enum P2 : byte
-        {
-            DeleteObject = 0b00000000,
-            DeleteObjectAndRelatedObjects = 0b10000000,
-        }
 
         public enum Tag : byte
         {
@@ -74,6 +67,101 @@ namespace GlobalPlatform.NET.Commands
         {
             CardContent,
             Key
+        }
+
+        public IDeleteCommandApplicationPicker DeleteCardContent()
+        {
+            this.scope = DeleteCommandScope.CardContent;
+
+            return this;
+        }
+
+        public IDeleteCommandKeyPicker DeleteKey()
+        {
+            this.scope = DeleteCommandScope.Key;
+
+            return this;
+        }
+
+        /// <summary>
+        /// The identity of the Application or Executable Load File to delete shall be specified
+        /// using the tag for an AID ('4F') followed by a length and the AID of the Application or
+        /// Executable Load File. When simultaneously deleting an Executable Load File and all its
+        /// related Applications, only the identity of the Executable Load File shall be provided.
+        /// </summary>
+        /// <param name="aid"></param>
+        /// <returns></returns>
+        public IDeleteCommandOptionsPicker WithAID(byte[] aid)
+        {
+            if (aid.Length < 5 || aid.Length > 16)
+            {
+                throw new ArgumentException("Length must be between 5-16 bytes (inclusive).", nameof(aid));
+            }
+
+            this.application = aid;
+
+            return this;
+        }
+
+        public IDeleteCommandTokenPicker AndRelatedObjects()
+        {
+            this.p2 = 0b10000000;
+
+            return this;
+        }
+
+        public IApduBuilder UsingToken(byte[] token)
+        {
+            if (!token.Any())
+            {
+                throw new ArgumentException("Length must be at least 1.", nameof(token));
+            }
+
+            this.token = token;
+
+            return this;
+        }
+
+        /// <summary>
+        /// A single key is deleted when both the Key Identifier ('D0') and the Key Version Number
+        /// ('D2') are provided in the DELETE command message data field. Multiple keys may be
+        /// deleted if one of these values is omitted (i.e. all keys with the specified Key
+        /// Identifier or Key Version Number). The options available for omitting these values are
+        /// conditional on the Issuer’s policy.
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public IDeleteCommandKeyPicker WithIdentifier(byte identifier)
+        {
+            if (identifier < 1 || identifier > 0x7F)
+            {
+                throw new ArgumentException("Identifier must be between 1-7F (inclusive).", nameof(identifier));
+            }
+
+            this.keyIdentifier = identifier;
+
+            return this;
+        }
+
+        /// <summary>
+        /// A single key is deleted when both the Key Identifier ('D0') and the Key Version Number
+        /// ('D2') are provided in the DELETE command message data field. Multiple keys may be
+        /// deleted if one of these values is omitted (i.e. all keys with the specified Key
+        /// Identifier or Key Version Number). The options available for omitting these values are
+        /// conditional on the Issuer’s policy.
+        /// </summary>
+        /// <param name="versionNumber"></param>
+        /// <returns></returns>
+        public IDeleteCommandKeyPicker WithVersionNumber(byte versionNumber)
+        {
+            if (versionNumber < 1 || versionNumber > 0x7F)
+            {
+                throw new ArgumentException("Version number must be between 1-7F (inclusive).", nameof(versionNumber));
+            }
+
+            this.keyVersionNumber = versionNumber;
+
+            return this;
         }
 
         public override IEnumerable<Apdu> Build()
@@ -112,117 +200,6 @@ namespace GlobalPlatform.NET.Commands
             apdu.CommandData = data.ToArray();
 
             yield return apdu;
-        }
-
-        public IDeleteCommandApplicationPicker DeleteCardContent()
-        {
-            this.scope = DeleteCommandScope.CardContent;
-
-            return this;
-        }
-
-        public IDeleteCommandKeyPicker DeleteKey()
-        {
-            this.scope = DeleteCommandScope.Key;
-
-            return this;
-        }
-
-        /// <summary>
-        /// The presence of the Delete Token depends on the Card Issuer’s policy. 
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public IApduBuilder UsingToken(byte[] token)
-        {
-            if (!token.Any())
-            {
-                throw new ArgumentException("Length must be at least 1.", nameof(token));
-            }
-
-            this.token = token;
-
-            return this;
-        }
-
-        /// <summary>
-        /// The identity of the Application or Executable Load File to delete shall be specified
-        /// using the tag for an AID ('4F') followed by a length and the AID of the Application or
-        /// Executable Load File. When simultaneously deleting an Executable Load File and all its
-        /// related Applications, only the identity of the Executable Load File shall be provided.
-        /// </summary>
-        /// <param name="aid"></param>
-        /// <returns></returns>
-        public IDeleteCommandTokenPicker WithAID(byte[] aid)
-        {
-            if (aid.Length < 5 || aid.Length > 16)
-            {
-                throw new ArgumentException("Length must be between 5-16 bytes (inclusive).", nameof(aid));
-            }
-
-            this.application = aid;
-
-            return this;
-        }
-
-        /// <summary>
-        /// A single key is deleted when both the Key Identifier ('D0') and the Key Version Number
-        /// ('D2') are provided in the DELETE command message data field. Multiple keys may be
-        /// deleted if one of these values is omitted (i.e. all keys with the specified Key
-        /// Identifier or Key Version Number). The options available for omitting these values are
-        /// conditional on the Issuer’s policy.
-        /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
-        public IDeleteCommandKeyPicker WithIdentifier(byte identifier)
-        {
-            if (identifier < 1 || identifier > 0x7F)
-            {
-                throw new ArgumentException("Identifier must be between 1-7F (inclusive).", nameof(identifier));
-            }
-
-            this.keyIdentifier = identifier;
-
-            return this;
-        }
-
-        public override IP2Picker<P2, IDeleteCommandScopePicker> WithP1(byte p1)
-        {
-            this.p1 = p1;
-
-            return this;
-        }
-
-        public override IP2Picker<P2, IDeleteCommandScopePicker> WithP1(P1 p1) => this.WithP1((byte)p1);
-
-        public override IDeleteCommandScopePicker WithP2(byte p2)
-        {
-            this.p2 = p2;
-
-            return this;
-        }
-
-        public override IDeleteCommandScopePicker WithP2(P2 p2) => this.WithP2((byte)p2);
-
-        /// <summary>
-        /// A single key is deleted when both the Key Identifier ('D0') and the Key Version Number
-        /// ('D2') are provided in the DELETE command message data field. Multiple keys may be
-        /// deleted if one of these values is omitted (i.e. all keys with the specified Key
-        /// Identifier or Key Version Number). The options available for omitting these values are
-        /// conditional on the Issuer’s policy.
-        /// </summary>
-        /// <param name="versionNumber"></param>
-        /// <returns></returns>
-        public IDeleteCommandKeyPicker WithVersionNumber(byte versionNumber)
-        {
-            if (versionNumber < 1 || versionNumber > 0x7F)
-            {
-                throw new ArgumentException("Version number must be between 1-7F (inclusive).", nameof(versionNumber));
-            }
-
-            this.keyVersionNumber = versionNumber;
-
-            return this;
         }
     }
 }

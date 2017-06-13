@@ -1,29 +1,23 @@
-﻿using GlobalPlatform.NET.Commands.Abstractions;
+﻿using System;
+using System.Collections.Generic;
+using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Reference;
-using System;
-using System.Collections.Generic;
 
 namespace GlobalPlatform.NET.Commands
 {
+    public interface ISelectCommandScopePicker
+    {
+        IApduBuilder SelectIssuerSecurityDomain();
+
+        ISelectCommandApplicationPicker SelectFirstOrOnlyOccurrence();
+
+        ISelectCommandApplicationPicker SelectNextOccurrence();
+    }
+
     public interface ISelectCommandApplicationPicker
     {
-        /// <summary>
-        /// The data field of the command shall contain the AID of the Application to be selected.
-        /// The Lc and data field of the SELECT command may be omitted if the Issuer Security Domain
-        /// is being selected.
-        /// </summary>
-        /// <param name="application"></param>
-        /// <returns></returns>
-        IApduBuilder Select(byte[] application);
-
-        /// <summary>
-        /// The data field of the command shall contain the AID of the Application to be selected.
-        /// The Lc and data field of the SELECT command may be omitted if the Issuer Security Domain
-        /// is being selected.
-        /// </summary>
-        /// <returns></returns>
-        IApduBuilder SelectIssuerSecurityDomain();
+        IApduBuilder Of(byte[] application);
     }
 
     /// <summary>
@@ -33,28 +27,34 @@ namespace GlobalPlatform.NET.Commands
     /// logical channel.
     /// <para> Based on section 11.9 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
-    public class SelectCommand : CommandP1P2Base<SelectCommand, SelectCommand.P1, SelectCommand.P2, ISelectCommandApplicationPicker>,
+    public class SelectCommand : CommandBase<SelectCommand, ISelectCommandScopePicker>,
+        ISelectCommandScopePicker,
         ISelectCommandApplicationPicker
     {
         private byte[] application;
 
-        public enum P1 : byte
+        public IApduBuilder SelectIssuerSecurityDomain()
         {
-            SelectByName = 0b00000100,
+            this.application = new byte[0];
+
+            return this;
         }
 
-        public enum P2
+        public ISelectCommandApplicationPicker SelectFirstOrOnlyOccurrence()
         {
-            FirstOrOnlyOccurrence = 0b00000000,
-            NextOccurrence = 0b00000010,
+            this.p2 = 0b00000000;
+
+            return this;
         }
 
-        public override IEnumerable<Apdu> Build()
+        public ISelectCommandApplicationPicker SelectNextOccurrence()
         {
-            yield return Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, this.p1, this.p2, this.application);
+            this.p2 = 0b00000010;
+
+            return this;
         }
 
-        public IApduBuilder Select(byte[] application)
+        public IApduBuilder Of(byte[] application)
         {
             if (application.Length < 5 || application.Length > 16)
             {
@@ -66,29 +66,9 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public IApduBuilder SelectIssuerSecurityDomain()
+        public override IEnumerable<Apdu> Build()
         {
-            this.application = new byte[0];
-
-            return this;
+            yield return Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, 0x04, this.p2, this.application);
         }
-
-        public override IP2Picker<P2, ISelectCommandApplicationPicker> WithP1(byte p1)
-        {
-            this.p1 = p1;
-
-            return this;
-        }
-
-        public override IP2Picker<P2, ISelectCommandApplicationPicker> WithP1(P1 p1) => this.WithP1((byte)p1);
-
-        public override ISelectCommandApplicationPicker WithP2(byte p2)
-        {
-            this.p2 = p2;
-
-            return this;
-        }
-
-        public override ISelectCommandApplicationPicker WithP2(P2 p2) => this.WithP2((byte)p2);
     }
 }
