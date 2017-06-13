@@ -1,7 +1,8 @@
-﻿using GlobalPlatform.NET.Extensions;
-using GlobalPlatform.NET.Reference;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using GlobalPlatform.NET.Extensions;
+using GlobalPlatform.NET.Reference;
 
 namespace GlobalPlatform.NET
 {
@@ -17,10 +18,14 @@ namespace GlobalPlatform.NET
                     (byte)this.INS,
                     this.P1,
                     this.P2,
-                    this.Lc
                 };
 
-                buffer.AddRange(this.CommandData);
+                if (this.CommandData.Any())
+                {
+                    buffer.Add(this.Lc);
+                    buffer.AddRange(this.CommandData);
+                }
+
                 buffer.Add(this.Le);
 
                 return buffer.ToArray();
@@ -58,5 +63,7 @@ namespace GlobalPlatform.NET
                 Le = 0x00
             };
         }
+
+        public override string ToString() => BitConverter.ToString(this.Buffer);
     }
 }
