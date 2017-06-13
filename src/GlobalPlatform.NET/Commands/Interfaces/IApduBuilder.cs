@@ -4,6 +4,8 @@ namespace GlobalPlatform.NET.Commands.Interfaces
 {
     public interface IApduBuilder
     {
-        IEnumerable<Apdu> Build();
+        IEnumerable<Apdu> AsApdu();
+
+        IEnumerable<byte[]> AsBytes();
     }
 }

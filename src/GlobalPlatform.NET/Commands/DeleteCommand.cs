@@ -105,7 +105,7 @@ namespace GlobalPlatform.NET.Commands
 
         public IDeleteCommandTokenPicker AndRelatedObjects()
         {
-            this.p2 = 0b10000000;
+            this.P2 = 0b10000000;
 
             return this;
         }
@@ -164,9 +164,9 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public override IEnumerable<Apdu> Build()
+        public override IEnumerable<Apdu> AsApdu()
         {
-            var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Delete, this.p1, this.p2);
+            var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Delete, this.P1, this.P2);
 
             var data = new List<byte>();
 

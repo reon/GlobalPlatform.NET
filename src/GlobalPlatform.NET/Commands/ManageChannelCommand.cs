@@ -42,12 +42,12 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public override IEnumerable<Apdu> Build()
+        public override IEnumerable<Apdu> AsApdu()
         {
-            this.p1 = (byte)this.operation;
-            this.p2 = this.operation == Operation.Close ? this.identifier : (byte)0x00;
+            this.P1 = (byte)this.operation;
+            this.P2 = this.operation == Operation.Close ? this.identifier : (byte)0x00;
 
-            yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.ManageChannel, this.p1, this.p2);
+            yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.ManageChannel, this.P1, this.P2);
         }
 
         private enum Operation : byte

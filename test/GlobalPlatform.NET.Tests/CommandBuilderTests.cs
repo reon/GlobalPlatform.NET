@@ -19,7 +19,7 @@ namespace GlobalPlatform.NET.Tests
             apdus = DeleteCommand.Create
                 .DeleteCardContent()
                 .WithAID(aid)
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x0A, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
 
@@ -27,7 +27,7 @@ namespace GlobalPlatform.NET.Tests
                 .DeleteCardContent()
                 .WithAID(aid)
                 .AndRelatedObjects()
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x80, 0x0A, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
 
@@ -36,21 +36,21 @@ namespace GlobalPlatform.NET.Tests
                 .WithAID(aid)
                 .AndRelatedObjects()
                 .UsingToken(token)
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x80, 0x14, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x9E, 0x08, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0x00 });
 
             apdus = DeleteCommand.Create
                 .DeleteKey()
                 .WithVersionNumber(0x6F)
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x03, 0xD2, 0x01, 0x6F, 0x00 });
 
             apdus = DeleteCommand.Create
                 .DeleteKey()
                 .WithIdentifier(0x0F)
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x03, 0xD0, 0x01, 0x0F, 0x00 });
 
@@ -58,7 +58,7 @@ namespace GlobalPlatform.NET.Tests
                 .DeleteKey()
                 .WithVersionNumber(0x6F)
                 .WithIdentifier(0x0F)
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x06, 0xD0, 0x01, 0x0F, 0xD2, 0x01, 0x6F, 0x00 });
         }
@@ -68,21 +68,21 @@ namespace GlobalPlatform.NET.Tests
         {
             apdus = SelectCommand.Create
                 .SelectIssuerSecurityDomain()
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x00, 0x00 });
 
             apdus = SelectCommand.Create
                 .SelectFirstOrOnlyOccurrence()
                 .Of(aid)
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x00, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
 
             apdus = SelectCommand.Create
                 .SelectNextOccurrence()
                 .Of(aid)
-                .Build();
+                .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x02, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
         }

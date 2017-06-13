@@ -42,14 +42,14 @@ namespace GlobalPlatform.NET.Commands
 
         public ISelectCommandApplicationPicker SelectFirstOrOnlyOccurrence()
         {
-            this.p2 = 0b00000000;
+            this.P2 = 0b00000000;
 
             return this;
         }
 
         public ISelectCommandApplicationPicker SelectNextOccurrence()
         {
-            this.p2 = 0b00000010;
+            this.P2 = 0b00000010;
 
             return this;
         }
@@ -66,9 +66,9 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public override IEnumerable<Apdu> Build()
+        public override IEnumerable<Apdu> AsApdu()
         {
-            yield return Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, 0x04, this.p2, this.application);
+            yield return Apdu.Build(ApduClass.Iso7816, ApduInstruction.Select, 0x04, this.P2, this.application);
         }
     }
 }

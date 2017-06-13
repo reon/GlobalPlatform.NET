@@ -12,56 +12,53 @@ namespace GlobalPlatform.NET
         {
             GetDataCommand.Create
                 .WithP1P2(GetDataCommand.P1P2.ListApplications)
-                .Build();
+                .AsApdu();
 
             GetStatusCommand.Create
-                .WithP1(GetStatusCommand.P1.IssuerSecurityDomain)
-                .WithP2(GetStatusCommand.P2.GetFirstOrAllOccurrences)
-                .WithNoFilter()
-                .Build();
+                .GetStatusOf(GetStatusScope.IssuerSecurityDomain)
+                .AsApdu();
 
             GetStatusCommand.Create
-                .WithP1(GetStatusCommand.P1.ExecutableLoadFilesAndModules)
-                .WithP2(GetStatusCommand.P2.GetFirstOrAllOccurrences)
+                .GetStatusOf(GetStatusScope.ExecutableLoadFilesAndModules)
                 .WithFilter(new byte[] { 0xA0, 0x00 })
-                .Build();
+                .AsApdu();
 
             LoadCommand.Create
                 .WithDapBlock(aid, Enumerable.Range(8, 8).Cast<byte>().ToArray())
                 .Load(new byte[8192])
                 .WithBlockSize(0x80)
-                .Build();
+                .AsApdu();
 
             LoadCommand.Create
                 .Load(new byte[4096])
                 .WithBlockSize(0xB0)
-                .Build();
+                .AsApdu();
 
             ManageChannelCommand.Create
                 .OpenChannel()
-                .Build();
+                .AsApdu();
 
             ManageChannelCommand.Create
                 .CloseChannel()
                 .WithIdentifier(0x01)
-                .Build();
+                .AsApdu();
 
             SetStatusCommand.Create
                 .SetIssuerSecurityDomainStatus()
                 .To(CardLifeCycleCoding.Initialized)
-                .Build();
+                .AsApdu();
 
             SetStatusCommand.Create
                 .SetSecurityDomainStatus()
                 .To(SecurityDomainLifeCycleCoding.Personalized)
                 .For(aid)
-                .Build();
+                .AsApdu();
 
             SetStatusCommand.Create
                 .SetApplicationStatus()
                 .To(ApplicationLifeCycleCoding.Selectable)
                 .For(aid)
-                .Build();
+                .AsApdu();
         }
     }
 }

@@ -36,11 +36,11 @@ namespace GlobalPlatform.NET.Commands
         private byte[] securityDomainAID;
         private byte[] signature;
 
-        public override IEnumerable<Apdu> Build()
+        public override IEnumerable<Apdu> AsApdu()
         {
             if (this.data.Length > this.blockSize)
             {
-                this.p1 ^= 0b10000000;
+                this.P1 ^= 0b10000000;
             }
 
             var data = new List<byte>();
@@ -56,7 +56,7 @@ namespace GlobalPlatform.NET.Commands
 
             data.AddTag((byte)Tag.LoadFileDataBlock, this.data);
 
-            return this.data.Split(this.blockSize).Select((block, i) => Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Load, this.p1, (byte)i, block.ToArray()));
+            return this.data.Split(this.blockSize).Select((block, i) => Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Load, this.P1, (byte)i, block.ToArray()));
         }
 
         public IApduBuilder WithBlockSize(byte blockSize)

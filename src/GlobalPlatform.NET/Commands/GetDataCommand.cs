@@ -29,7 +29,7 @@ namespace GlobalPlatform.NET.Commands
         /// </summary>
         public static IP1P2Picker<P1P2, IApduBuilder> Create => new GetDataCommand();
 
-        public IEnumerable<Apdu> Build()
+        public IEnumerable<Apdu> AsApdu()
         {
             var bytes = BitConverter.GetBytes((ushort)this.p1p2);
 
