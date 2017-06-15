@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using GlobalPlatform.NET.Commands;
@@ -101,8 +102,8 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void Load()
         {
-            byte[] data = new byte[4096];
-            byte blockSize = 0x80;
+            byte[] data = new byte[new Random().Next(1, 32768)];
+            byte blockSize = (byte)new Random().Next(128, 240);
 
             var apdus = LoadCommand.Create
                 .Load(data)
@@ -110,9 +111,11 @@ namespace GlobalPlatform.NET.Tests
                 .AsApdu()
                 .ToList();
 
+            byte[] dataBlock = apdus.SelectMany(apdu => apdu.CommandData).ToArray();
+
             apdus.ForEach((apdu, index, isLast) => apdu.Buffer.Take(5)
                 .ShouldBeEquivalentTo(new byte[]
-                    {0x80, 0xE8, (byte) (isLast ? 0x80 : 0x00), (byte) index, (byte) (isLast ? 0x01 : 0x80)}));
+                    {0x80, 0xE8, (byte) (isLast ? 0x80 : 0x00), (byte) index, (byte) (isLast ? dataBlock.Length % blockSize : blockSize)}));
 
             apdus.ForEach((apdu, index, isLast) => apdu.Buffer.Last()
                 .Should().Be(0x00));
