@@ -15,23 +15,6 @@ namespace GlobalPlatform.NET
                 .Load(new byte[8192])
                 .WithBlockSize(0x80)
                 .AsApdu();
-
-            SetStatusCommand.Create
-                .SetIssuerSecurityDomainStatus()
-                .To(CardLifeCycleCoding.Initialized)
-                .AsApdu();
-
-            SetStatusCommand.Create
-                .SetSecurityDomainStatus()
-                .To(SecurityDomainLifeCycleCoding.Personalized)
-                .For(aid)
-                .AsApdu();
-
-            SetStatusCommand.Create
-                .SetApplicationStatus()
-                .To(ApplicationLifeCycleCoding.Selectable)
-                .For(aid)
-                .AsApdu();
         }
     }
 }

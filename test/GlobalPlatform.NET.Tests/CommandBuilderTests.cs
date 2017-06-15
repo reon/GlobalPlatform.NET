@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using GlobalPlatform.NET.Commands;
 using GlobalPlatform.NET.Extensions;
+using GlobalPlatform.NET.Reference;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GlobalPlatform.NET.Tests
@@ -160,6 +161,33 @@ namespace GlobalPlatform.NET.Tests
                 .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x02, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+        }
+
+        [TestMethod]
+        public void SetStatus()
+        {
+            apdus = SetStatusCommand.Create
+                .SetIssuerSecurityDomainStatus()
+                .To(CardLifeCycleCoding.Initialized)
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x80, 0x07 });
+
+            apdus = SetStatusCommand.Create
+                .SetSecurityDomainStatus()
+                .To(SecurityDomainLifeCycleCoding.Personalized)
+                .For(aid)
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x40, 0x0F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+
+            apdus = SetStatusCommand.Create
+                .SetApplicationStatus()
+                .To(ApplicationLifeCycleCoding.Selectable)
+                .For(aid)
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x60, 0x07, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
         }
     }
 }
