@@ -101,7 +101,7 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void Load()
         {
-            byte[] data = new byte[new Random().Next(1, 32768)];
+            byte[] data = new byte[new Random().Next(1, 32767)];
             byte blockSize = (byte)new Random().Next(128, 240);
 
             var apdus = LoadCommand.Create
@@ -202,6 +202,22 @@ namespace GlobalPlatform.NET.Tests
                 .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x60, 0x07, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+        }
+
+        [TestMethod]
+        public void StoreData()
+        {
+            byte[] data = new byte[new Random().Next(256, 510)];
+            byte blockSize = (byte)new Random().Next(128, 240);
+
+            var apdus = StoreDataCommand.Create
+                .WithP1(0x10)
+                .StoreData(data)
+                .WithBlockSize(blockSize)
+                .AsApdu()
+                .ToList();
+
+            apdus.First().Buffer.Take(5).Should().BeEquivalentTo(new byte[] { 0x80, 0xE2, 0x10, 0x00, blockSize });
         }
     }
 }
