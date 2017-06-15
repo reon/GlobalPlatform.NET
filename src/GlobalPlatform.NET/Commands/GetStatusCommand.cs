@@ -28,7 +28,7 @@ namespace GlobalPlatform.NET.Commands
         IGetStatusScopePicker,
         IGetStatusApplicationFilter
     {
-        private byte[] applicationFilter;
+        private byte[] applicationFilter = new byte[0];
 
         public enum Tag : byte
         {
@@ -51,7 +51,7 @@ namespace GlobalPlatform.NET.Commands
 
         public override IEnumerable<Apdu> AsApdu()
         {
-            var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetData, P1, P2);
+            var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetStatus, this.P1, this.P2);
 
             var data = new List<byte>();
 
