@@ -43,7 +43,7 @@ namespace GlobalPlatform.NET.Commands
     {
         public IIssuerSecurityDomainStatusPicker SetIssuerSecurityDomainStatus()
         {
-            this.P1 = (byte)Scope.SecurityDomain;
+            this.scope = Scope.IssuerSecurityDomain;
             this.application = new byte[0];
 
             return this;
@@ -51,14 +51,14 @@ namespace GlobalPlatform.NET.Commands
 
         public ISecurityDomainStatusPicker SetSecurityDomainStatus()
         {
-            this.P1 = (byte)Scope.Application;
+            this.scope = Scope.SecurityDomain;
 
             return this;
         }
 
         public IApplicationStatusPicker SetApplicationStatus()
         {
-            this.P1 = (byte)Scope.IssuerSecurityDomain;
+            this.scope = Scope.Application;
 
             return this;
         }
@@ -93,7 +93,19 @@ namespace GlobalPlatform.NET.Commands
 
         public override IEnumerable<Apdu> AsApdu()
         {
-            yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.SetStatus, this.P1, this.P2, this.application);
+            this.P1 = (byte)this.scope;
+
+            switch (this.scope)
+            {
+                case Scope.IssuerSecurityDomain:
+                    yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.SetStatus, this.P1, this.P2);
+                    break;
+
+                case Scope.SecurityDomain:
+                case Scope.Application:
+                    yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.SetStatus, this.P1, this.P2, this.application);
+                    break;
+            }
         }
 
         private enum Scope : byte
@@ -103,6 +115,7 @@ namespace GlobalPlatform.NET.Commands
             Application = 0b01100000
         }
 
+        private Scope scope;
         private byte[] application;
     }
 }
