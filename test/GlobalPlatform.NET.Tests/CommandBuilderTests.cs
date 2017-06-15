@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using GlobalPlatform.NET.Commands;
@@ -14,12 +13,11 @@ namespace GlobalPlatform.NET.Tests
     {
         private static readonly byte[] aid = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
         private static readonly byte[] token = { 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE };
-        private static IEnumerable<Apdu> apdus;
 
         [TestMethod]
         public void Delete()
         {
-            apdus = DeleteCommand.Create
+            var apdus = DeleteCommand.Create
                 .DeleteCardContent()
                 .WithAID(aid)
                 .AsApdu();
@@ -69,7 +67,7 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void GetData()
         {
-            apdus = GetDataCommand.Create
+            var apdus = GetDataCommand.Create
                 .GetDataFrom(DataObject.ListApplications)
                 .WithTagList(0x5C, 0x00)
                 .AsApdu();
@@ -86,7 +84,7 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void GetStatus()
         {
-            apdus = GetStatusCommand.Create
+            var apdus = GetStatusCommand.Create
                 .GetStatusOf(GetStatusScope.IssuerSecurityDomain)
                 .AsApdu();
 
@@ -118,14 +116,30 @@ namespace GlobalPlatform.NET.Tests
                 .ShouldBeEquivalentTo(new byte[]
                     {0x80, 0xE8, (byte) (isLast ? 0x80 : 0x00), (byte) index, (byte) (isLast ? dataBlock.Length % blockSize : blockSize)}));
 
-            apdus.ForEach((apdu, index, isLast) => apdu.Buffer.Last()
+            apdus.ForEach(apdu => apdu.Buffer.Last()
+                .Should().Be(0x00));
+
+            apdus = LoadCommand.Create
+                .WithDapBlock(aid, Enumerable.Range(8, 8).Select(x => (byte)x).ToArray())
+                .Load(data)
+                .WithBlockSize(blockSize)
+                .AsApdu()
+                .ToList();
+
+            dataBlock = apdus.SelectMany(apdu => apdu.CommandData).ToArray();
+
+            apdus.ForEach((apdu, index, isLast) => apdu.Buffer.Take(5)
+                .ShouldBeEquivalentTo(new byte[]
+                    {0x80, 0xE8, (byte) (isLast ? 0x80 : 0x00), (byte) index, (byte) (isLast ? dataBlock.Length % blockSize : blockSize)}));
+
+            apdus.ForEach(apdu => apdu.Buffer.Last()
                 .Should().Be(0x00));
         }
 
         [TestMethod]
         public void ManageChannel()
         {
-            apdus = ManageChannelCommand.Create
+            var apdus = ManageChannelCommand.Create
                 .OpenChannel()
                 .AsApdu();
 
@@ -142,7 +156,7 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void Select()
         {
-            apdus = SelectCommand.Create
+            var apdus = SelectCommand.Create
                 .SelectIssuerSecurityDomain()
                 .AsApdu();
 
@@ -166,7 +180,7 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void SetStatus()
         {
-            apdus = SetStatusCommand.Create
+            var apdus = SetStatusCommand.Create
                 .SetIssuerSecurityDomainStatus()
                 .To(CardLifeCycleCoding.Initialized)
                 .AsApdu();
