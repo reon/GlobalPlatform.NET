@@ -28,22 +28,17 @@ namespace GlobalPlatform.NET.Commands
     }
 
     public class LoadCommand : CommandBase<LoadCommand, ILoadFileStructureBuilder>,
-                ILoadFileStructureBuilder,
+        ILoadFileStructureBuilder,
         ILoadCommandBlockSizePicker
     {
         private byte blockSize = 247;
         private byte[] data;
-        private byte[] securityDomainAID;
-        private byte[] signature;
+        private byte[] securityDomainAID = new byte[0];
+        private byte[] signature = new byte[0];
 
         public override IEnumerable<Apdu> AsApdu()
         {
-            if (this.data.Length > this.blockSize)
-            {
-                this.P1 ^= 0b10000000;
-            }
-
-            var data = new List<byte>();
+            var commandData = new List<byte>();
 
             if (this.securityDomainAID.Any())
             {
@@ -51,12 +46,20 @@ namespace GlobalPlatform.NET.Commands
                 signatureData.AddTag((byte)Tag.SecurityDomainAID, this.securityDomainAID);
                 signatureData.AddTag((byte)Tag.LoadFileDataBlockSignature, this.signature);
 
-                data.AddTag((byte)Tag.DapBlock, signatureData.ToArray());
+                commandData.AddTag((byte)Tag.DapBlock, signatureData.ToArray());
             }
 
-            data.AddTag((byte)Tag.LoadFileDataBlock, this.data);
+            commandData.Add((byte)Tag.LoadFileDataBlock);
+            commandData.AddRange(this.data);
 
-            return this.data.Split(this.blockSize).Select((block, i) => Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Load, this.P1, (byte)i, block.ToArray()));
+            var chunks = commandData.Split(this.blockSize).ToList();
+
+            return chunks.Select((block, index, isLast) => Apdu.Build(
+                ApduClass.GlobalPlatform,
+                ApduInstruction.Load,
+                (byte)(isLast ? 0x80 : 0x00),
+                (byte)index,
+                block.ToArray()));
         }
 
         public IApduBuilder WithBlockSize(byte blockSize)
