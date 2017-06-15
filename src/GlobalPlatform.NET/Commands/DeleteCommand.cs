@@ -166,7 +166,7 @@ namespace GlobalPlatform.NET.Commands
 
         public override IEnumerable<Apdu> AsApdu()
         {
-            var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Delete, this.P1, this.P2);
+            var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Delete, this.P1, this.P2, 0x00);
 
             var data = new List<byte>();
 

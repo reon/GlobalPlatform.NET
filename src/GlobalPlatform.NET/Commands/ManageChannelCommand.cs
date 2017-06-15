@@ -47,7 +47,16 @@ namespace GlobalPlatform.NET.Commands
             this.P1 = (byte)this.operation;
             this.P2 = this.operation == Operation.Close ? this.identifier : (byte)0x00;
 
-            yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.ManageChannel, this.P1, this.P2);
+            switch (this.operation)
+            {
+                case Operation.Open:
+                    yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.ManageChannel, this.P1, this.P2, 0x01);
+                    break;
+
+                case Operation.Close:
+                    yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.ManageChannel, this.P1, this.P2);
+                    break;
+            }
         }
 
         private enum Operation : byte

@@ -16,15 +16,6 @@ namespace GlobalPlatform.NET
                 .WithBlockSize(0x80)
                 .AsApdu();
 
-            ManageChannelCommand.Create
-                .OpenChannel()
-                .AsApdu();
-
-            ManageChannelCommand.Create
-                .CloseChannel()
-                .WithIdentifier(0x01)
-                .AsApdu();
-
             SetStatusCommand.Create
                 .SetIssuerSecurityDomainStatus()
                 .To(CardLifeCycleCoding.Initialized)

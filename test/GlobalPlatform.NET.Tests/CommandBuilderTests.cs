@@ -122,6 +122,23 @@ namespace GlobalPlatform.NET.Tests
         }
 
         [TestMethod]
+        public void ManageChannel()
+        {
+            apdus = ManageChannelCommand.Create
+                .OpenChannel()
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0x70, 0x00, 0x00, 0x01 });
+
+            apdus = ManageChannelCommand.Create
+                .CloseChannel()
+                .WithIdentifier(0x01)
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0x70, 0x80, 0x01 });
+        }
+
+        [TestMethod]
         public void Select()
         {
             apdus = SelectCommand.Create
