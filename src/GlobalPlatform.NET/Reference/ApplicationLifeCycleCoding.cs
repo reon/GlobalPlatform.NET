@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GlobalPlatform.NET.Reference
+﻿namespace GlobalPlatform.NET.Reference
 {
     public enum ApplicationLifeCycleCoding : byte
     {
