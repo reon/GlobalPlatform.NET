@@ -24,7 +24,8 @@ namespace GlobalPlatform.NET.Extensions
         /// Adds a tag to the collection, followed by the length of the data, followed by the data itself. 
         /// </summary>
         /// <param name="bytes"></param>
-        /// <param name="range"></param>
+        /// <param name="tag"></param>
+        /// <param name="data"></param>
         /// <returns></returns>
         public static byte AddTag(this ICollection<byte> bytes, byte tag, params byte[] data)
         {
