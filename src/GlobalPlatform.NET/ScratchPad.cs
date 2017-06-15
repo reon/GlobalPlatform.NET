@@ -10,28 +10,10 @@ namespace GlobalPlatform.NET
 
         public ScratchPad()
         {
-            GetDataCommand.Create
-                .WithP1P2(GetDataCommand.P1P2.ListApplications)
-                .AsApdu();
-
-            GetStatusCommand.Create
-                .GetStatusOf(GetStatusScope.IssuerSecurityDomain)
-                .AsApdu();
-
-            GetStatusCommand.Create
-                .GetStatusOf(GetStatusScope.ExecutableLoadFilesAndModules)
-                .WithFilter(new byte[] { 0xA0, 0x00 })
-                .AsApdu();
-
             LoadCommand.Create
                 .WithDapBlock(aid, Enumerable.Range(8, 8).Cast<byte>().ToArray())
                 .Load(new byte[8192])
                 .WithBlockSize(0x80)
-                .AsApdu();
-
-            LoadCommand.Create
-                .Load(new byte[4096])
-                .WithBlockSize(0xB0)
                 .AsApdu();
 
             ManageChannelCommand.Create

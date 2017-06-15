@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using GlobalPlatform.NET.Commands;
+using GlobalPlatform.NET.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GlobalPlatform.NET.Tests
@@ -61,6 +62,60 @@ namespace GlobalPlatform.NET.Tests
                 .AsApdu();
 
             apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x06, 0xD0, 0x01, 0x0F, 0xD2, 0x01, 0x6F, 0x00 });
+        }
+
+        [TestMethod]
+        public void GetData()
+        {
+            apdus = GetDataCommand.Create
+                .GetDataFrom(DataObject.ListApplications)
+                .WithTagList(0x5C, 0x00)
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xCA, 0x2F, 0x00, 0x02, 0x5C, 0x00, 0x00 });
+
+            apdus = GetDataCommand.Create
+                .GetDataFrom(DataObject.KeyInformationTemplate)
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xCA, 0x00, 0xE0, 0x00 });
+        }
+
+        [TestMethod]
+        public void GetStatus()
+        {
+            apdus = GetStatusCommand.Create
+                .GetStatusOf(GetStatusScope.IssuerSecurityDomain)
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF2, 0x80, 0x00, 0x02, 0x4F, 0x00, 0x00 });
+
+            apdus = GetStatusCommand.Create
+                .GetStatusOf(GetStatusScope.ExecutableLoadFilesAndModules)
+                .WithFilter(new byte[] { 0xA0, 0x00 })
+                .AsApdu();
+
+            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF2, 0x10, 0x00, 0x04, 0x4F, 0x02, 0xA0, 0x00, 0x00 });
+        }
+
+        [TestMethod]
+        public void Load()
+        {
+            byte[] data = new byte[4096];
+            byte blockSize = 0x80;
+
+            var apdus = LoadCommand.Create
+                .Load(data)
+                .WithBlockSize(blockSize)
+                .AsApdu()
+                .ToList();
+
+            apdus.ForEach((apdu, index, isLast) => apdu.Buffer.Take(5)
+                .ShouldBeEquivalentTo(new byte[]
+                    {0x80, 0xE8, (byte) (isLast ? 0x80 : 0x00), (byte) index, (byte) (isLast ? 0x01 : 0x80)}));
+
+            apdus.ForEach((apdu, index, isLast) => apdu.Buffer.Last()
+                .Should().Be(0x00));
         }
 
         [TestMethod]
