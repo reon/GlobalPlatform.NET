@@ -14,7 +14,7 @@ namespace GlobalPlatform.NET.Commands.Abstractions
         /// <summary>
         /// Starts building the command. 
         /// </summary>
-        public static TBuilder Create => new TCommand();
+        public static TBuilder Build => new TCommand();
 
         public abstract IEnumerable<Apdu> AsApdu();
 
