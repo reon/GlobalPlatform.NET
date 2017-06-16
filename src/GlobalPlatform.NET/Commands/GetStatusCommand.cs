@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using GlobalPlatform.NET.Commands.Abstractions;
+﻿using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
+using System.Collections.Generic;
 
 namespace GlobalPlatform.NET.Commands
 {
@@ -24,6 +24,12 @@ namespace GlobalPlatform.NET.Commands
         IApduBuilder WithFilter(byte[] applicationFilter);
     }
 
+    /// <summary>
+    /// The GET STATUS command is used to retrieve Issuer Security Domain, Executable Load File,
+    /// Executable Module, Application or Security Domain Life Cycle status information according to
+    /// a given match/search criteria.
+    /// <para>Based on section 11.4 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// </summary>
     public class GetStatusCommand : CommandBase<GetStatusCommand, IGetStatusScopePicker>,
         IGetStatusScopePicker,
         IGetStatusApplicationFilter

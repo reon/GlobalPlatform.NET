@@ -17,6 +17,10 @@ namespace GlobalPlatform.NET.Commands
         IApduBuilder WithIdentifier(byte identifier);
     }
 
+    /// <summary>
+    /// TThe MANAGE CHANNEL command is processed by the OPEN on cards that are aware of logical channels. It is used to open and close Supplementary Logical Channels. The Basic Logical Channel (channel number zero) can never be closed.
+    /// <para>Based on section 11.7 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// </summary>
     public class ManageChannelCommand : CommandBase<ManageChannelCommand, IChannelOperationPicker>,
         IChannelOperationPicker,
         IChannelPicker

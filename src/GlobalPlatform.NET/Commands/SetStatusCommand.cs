@@ -34,6 +34,10 @@ namespace GlobalPlatform.NET.Commands
         IApduBuilder For(byte[] application);
     }
 
+    /// <summary>
+    /// The SET STATUS command shall be used to modify the card Life Cycle State or the Application Life Cycle State.
+    /// <para>Based on section 11.10 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// </summary>
     public class SetStatusCommand : CommandBase<SetStatusCommand, ISetStatusScopePicker>,
         ISetStatusScopePicker,
         IIssuerSecurityDomainStatusPicker,

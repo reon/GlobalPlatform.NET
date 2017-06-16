@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GlobalPlatform.NET.Commands.Abstractions;
+﻿using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Reference;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GlobalPlatform.NET.Commands
 {
@@ -30,6 +30,13 @@ namespace GlobalPlatform.NET.Commands
         IApduBuilder WithTagList(params byte[] tags);
     }
 
+    /// <summary>
+    /// The GET DATA command is used to retrieve either a single data object, which may be
+    /// constructed, or a set of data objects. Reference control parameters P1 and P2 coding is used
+    /// to define the specific data object tag. The data object may contain information pertaining to
+    /// a key.
+    /// <para>Based on section 11.3 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// </summary>
     public class GetDataCommand : CommandBase<GetDataCommand, IGetDataObjectPicker>,
         IGetDataObjectPicker,
         IGetDataTagListPicker

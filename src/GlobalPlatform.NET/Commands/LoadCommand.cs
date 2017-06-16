@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GlobalPlatform.NET.Commands.Abstractions;
+﻿using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GlobalPlatform.NET.Commands
 {
@@ -27,6 +27,22 @@ namespace GlobalPlatform.NET.Commands
         ILoadCommandBlockSizePicker Load(byte[] data);
     }
 
+    /// <summary>
+    /// The LOAD command is used for loading a Load File. The runtime environment internal handling
+    /// or storage of the Load File is beyond the scope of this Specification.
+    /// <para>
+    /// Multiple LOAD commands may be used to transfer a Load File to the card. The Load File is
+    /// divided into smaller components for transmission. Each LOAD command shall be numbered
+    /// starting at '00'. The LOAD command numbering shall be strictly sequential and increments by
+    /// one. The card shall be informed of the last block of the Load File.
+    /// </para>
+    /// <para>
+    /// After receiving the last block of the Load File, the card shall execute the internal
+    /// processes necessary for the Load File and any additional processes identified in the INSTALL
+    /// [for load] command that preceded the LOAD commands.
+    /// </para>
+    /// <para>Based on section 11.6 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// </summary>
     public class LoadCommand : CommandBase<LoadCommand, ILoadFileStructureBuilder>,
         ILoadFileStructureBuilder,
         ILoadCommandBlockSizePicker
