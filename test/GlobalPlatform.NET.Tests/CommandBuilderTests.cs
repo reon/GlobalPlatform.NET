@@ -4,9 +4,6 @@ using GlobalPlatform.NET.Commands;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using System;
-
 using System.Linq;
 
 namespace GlobalPlatform.NET.Tests

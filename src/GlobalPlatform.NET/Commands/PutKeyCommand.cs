@@ -1,9 +1,6 @@
 ﻿using System;
 using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
-
-using System;
-
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
 using System.Collections.Generic;
