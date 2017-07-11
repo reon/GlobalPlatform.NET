@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GlobalPlatform.NET.Commands.Interfaces;
+﻿using GlobalPlatform.NET.Commands.Interfaces;
 
 namespace GlobalPlatform.NET.Commands.Abstractions
 {
@@ -16,8 +14,8 @@ namespace GlobalPlatform.NET.Commands.Abstractions
         /// </summary>
         public static TBuilder Build => new TCommand();
 
-        public abstract IEnumerable<Apdu> AsApdu();
+        public abstract Apdu AsApdu();
 
-        public IEnumerable<byte[]> AsBytes() => this.AsApdu().Select(x => x.Buffer);
+        public byte[] AsBytes() => this.AsApdu().Buffer;
     }
 }

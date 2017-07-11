@@ -164,7 +164,7 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public override IEnumerable<Apdu> AsApdu()
+        public override Apdu AsApdu()
         {
             var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.Delete, this.P1, this.P2, 0x00);
 
@@ -199,7 +199,7 @@ namespace GlobalPlatform.NET.Commands
 
             apdu.CommandData = data.ToArray();
 
-            yield return apdu;
+            return apdu;
         }
     }
 }

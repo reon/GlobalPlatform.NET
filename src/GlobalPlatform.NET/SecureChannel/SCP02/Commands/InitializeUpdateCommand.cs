@@ -41,16 +41,11 @@ namespace GlobalPlatform.NET.SecureChannel.SCP02.Commands
 
         public IApduBuilder WithHostChallenge(out byte[] hostChallenge)
         {
-            hostChallenge = SecureRandom.GetBytes(8);
-
-            this.hostChallenge = hostChallenge;
+            this.hostChallenge = hostChallenge = SecureRandom.GetBytes(8);
 
             return this;
         }
 
-        public override IEnumerable<Apdu> AsApdu()
-        {
-            yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.InitializeUpdate, this.P1, this.P2, this.hostChallenge);
-        }
+        public override Apdu AsApdu() => Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.InitializeUpdate, this.P1, this.P2, this.hostChallenge);
     }
 }

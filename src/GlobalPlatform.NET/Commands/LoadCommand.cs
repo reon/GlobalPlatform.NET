@@ -15,9 +15,9 @@ namespace GlobalPlatform.NET.Commands
         LoadFileDataBlock = 0xC4
     }
 
-    public interface ILoadCommandBlockSizePicker : IApduBuilder
+    public interface ILoadCommandBlockSizePicker : IMultiApduBuilder
     {
-        IApduBuilder WithBlockSize(byte blockSize);
+        IMultiApduBuilder WithBlockSize(byte blockSize);
     }
 
     public interface ILoadFileStructureBuilder
@@ -41,9 +41,9 @@ namespace GlobalPlatform.NET.Commands
     /// processes necessary for the Load File and any additional processes identified in the INSTALL
     /// [for load] command that preceded the LOAD commands.
     /// </para>
-    /// <para>Based on section 11.6 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// <para> Based on section 11.6 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
-    public class LoadCommand : CommandBase<LoadCommand, ILoadFileStructureBuilder>,
+    public class LoadCommand : MultiCommandBase<LoadCommand, ILoadFileStructureBuilder>,
         ILoadFileStructureBuilder,
         ILoadCommandBlockSizePicker
     {
@@ -52,7 +52,7 @@ namespace GlobalPlatform.NET.Commands
         private byte[] securityDomainAID = new byte[0];
         private byte[] signature = new byte[0];
 
-        public override IEnumerable<Apdu> AsApdu()
+        public override IEnumerable<Apdu> AsApdus()
         {
             var commandData = new List<byte>();
 
@@ -78,7 +78,7 @@ namespace GlobalPlatform.NET.Commands
                 block.ToArray()));
         }
 
-        public IApduBuilder WithBlockSize(byte blockSize)
+        public IMultiApduBuilder WithBlockSize(byte blockSize)
         {
             this.blockSize = blockSize;
 

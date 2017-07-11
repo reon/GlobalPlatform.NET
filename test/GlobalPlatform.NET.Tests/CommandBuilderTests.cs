@@ -17,85 +17,85 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void Delete()
         {
-            var apdus = DeleteCommand.Build
+            var apdu = DeleteCommand.Build
                 .DeleteCardContent()
                 .WithAID(aid)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x0A, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x0A, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
 
-            apdus = DeleteCommand.Build
+            apdu = DeleteCommand.Build
                 .DeleteCardContent()
                 .WithAID(aid)
                 .AndRelatedObjects()
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x80, 0x0A, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x80, 0x0A, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
 
-            apdus = DeleteCommand.Build
+            apdu = DeleteCommand.Build
                 .DeleteCardContent()
                 .WithAID(aid)
                 .AndRelatedObjects()
                 .UsingToken(token)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x80, 0x14, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x9E, 0x08, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x80, 0x14, 0x4F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x9E, 0x08, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0xEE, 0x00 });
 
-            apdus = DeleteCommand.Build
+            apdu = DeleteCommand.Build
                 .DeleteKey()
                 .WithVersionNumber(0x6F)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x03, 0xD2, 0x01, 0x6F, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x03, 0xD2, 0x01, 0x6F, 0x00 });
 
-            apdus = DeleteCommand.Build
+            apdu = DeleteCommand.Build
                 .DeleteKey()
                 .WithIdentifier(0x0F)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x03, 0xD0, 0x01, 0x0F, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x03, 0xD0, 0x01, 0x0F, 0x00 });
 
-            apdus = DeleteCommand.Build
+            apdu = DeleteCommand.Build
                 .DeleteKey()
                 .WithVersionNumber(0x6F)
                 .WithIdentifier(0x0F)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x06, 0xD0, 0x01, 0x0F, 0xD2, 0x01, 0x6F, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xE4, 0x00, 0x00, 0x06, 0xD0, 0x01, 0x0F, 0xD2, 0x01, 0x6F, 0x00 });
         }
 
         [TestMethod]
         public void GetData()
         {
-            var apdus = GetDataCommand.Build
+            var apdu = GetDataCommand.Build
                 .GetDataFrom(DataObject.ListApplications)
                 .WithTagList(0x5C, 0x00)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xCA, 0x2F, 0x00, 0x02, 0x5C, 0x00, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xCA, 0x2F, 0x00, 0x02, 0x5C, 0x00, 0x00 });
 
-            apdus = GetDataCommand.Build
+            apdu = GetDataCommand.Build
                 .GetDataFrom(DataObject.KeyInformationTemplate)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xCA, 0x00, 0xE0, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xCA, 0x00, 0xE0, 0x00 });
         }
 
         [TestMethod]
         public void GetStatus()
         {
-            var apdus = GetStatusCommand.Build
+            var apdu = GetStatusCommand.Build
                 .GetStatusOf(GetStatusScope.IssuerSecurityDomain)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF2, 0x80, 0x00, 0x02, 0x4F, 0x00, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF2, 0x80, 0x00, 0x02, 0x4F, 0x00, 0x00 });
 
-            apdus = GetStatusCommand.Build
+            apdu = GetStatusCommand.Build
                 .GetStatusOf(GetStatusScope.ExecutableLoadFilesAndModules)
                 .WithFilter(new byte[] { 0xA0, 0x00 })
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF2, 0x10, 0x00, 0x04, 0x4F, 0x02, 0xA0, 0x00, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF2, 0x10, 0x00, 0x04, 0x4F, 0x02, 0xA0, 0x00, 0x00 });
         }
 
         [TestMethod]
@@ -107,7 +107,7 @@ namespace GlobalPlatform.NET.Tests
             var apdus = LoadCommand.Build
                 .Load(data)
                 .WithBlockSize(blockSize)
-                .AsApdu()
+                .AsApdus()
                 .ToList();
 
             byte[] dataBlock = apdus.SelectMany(apdu => apdu.CommandData).ToArray();
@@ -123,7 +123,7 @@ namespace GlobalPlatform.NET.Tests
                 .WithDapBlock(aid, Enumerable.Range(8, 8).Select(x => (byte)x).ToArray())
                 .Load(data)
                 .WithBlockSize(blockSize)
-                .AsApdu()
+                .AsApdus()
                 .ToList();
 
             dataBlock = apdus.SelectMany(apdu => apdu.CommandData).ToArray();
@@ -139,18 +139,18 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void ManageChannel()
         {
-            var apdus = ManageChannelCommand.Build
+            var apdu = ManageChannelCommand.Build
                 .OpenChannel()
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0x70, 0x00, 0x00, 0x01 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0x70, 0x00, 0x00, 0x01 });
 
-            apdus = ManageChannelCommand.Build
+            apdu = ManageChannelCommand.Build
                 .CloseChannel()
                 .WithIdentifier(0x01)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0x70, 0x80, 0x01 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0x70, 0x80, 0x01 });
         }
 
         [TestMethod]
@@ -159,19 +159,18 @@ namespace GlobalPlatform.NET.Tests
             const byte keyVersion = 0x7F;
             const byte keyIdentifier = 0x01;
 
-            var apdus = PutKeyCommand.Build
+            var apdu = PutKeyCommand.Build
                 .WithKeyVersion(keyVersion)
                 .WithKeyIdentifier(1)
-                .UsingKEK(new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17 })
+                .UsingKEK(new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17 })
                 .PutFirstKey(KeyTypeCoding.DES, new byte[16])
                 .PutSecondKey(KeyTypeCoding.DES, new byte[16])
                 .PutThirdKey(KeyTypeCoding.DES, new byte[16])
-                .AsApdu()
-                .ToList();
+                .AsApdu();
 
-            apdus.First().Buffer.Take(5).Should().BeEquivalentTo(new byte[] { 0x80, 0xD8, keyVersion, keyIdentifier, 0x3A });
-            apdus.First().CommandData.First().Should().Be(keyVersion);
-            apdus.First().CommandData.Skip(1).Split(19).ForEach(block =>
+            apdu.Buffer.Take(5).Should().BeEquivalentTo(new byte[] { 0x80, 0xD8, keyVersion, keyIdentifier, 0x3A });
+            apdu.CommandData.First().Should().Be(keyVersion);
+            apdu.CommandData.Skip(1).Split(19).ForEach(block =>
             {
                 block.First().Should().Be(0x80);
                 block.Skip(1).First().Should().Be(0x10);
@@ -181,52 +180,52 @@ namespace GlobalPlatform.NET.Tests
         [TestMethod]
         public void Select()
         {
-            var apdus = SelectCommand.Build
+            var apdu = SelectCommand.Build
                 .SelectIssuerSecurityDomain()
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x00, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x00, 0x00 });
 
-            apdus = SelectCommand.Build
+            apdu = SelectCommand.Build
                 .SelectFirstOrOnlyOccurrence()
                 .Of(aid)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x00, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x00, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
 
-            apdus = SelectCommand.Build
+            apdu = SelectCommand.Build
                 .SelectNextOccurrence()
                 .Of(aid)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x02, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x00, 0xA4, 0x04, 0x02, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
         }
 
         [TestMethod]
         public void SetStatus()
         {
-            var apdus = SetStatusCommand.Build
+            var apdu = SetStatusCommand.Build
                 .SetIssuerSecurityDomainStatus()
                 .To(CardLifeCycleCoding.Initialized)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x80, 0x07 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x80, 0x07 });
 
-            apdus = SetStatusCommand.Build
+            apdu = SetStatusCommand.Build
                 .SetSecurityDomainStatus()
                 .To(SecurityDomainLifeCycleCoding.Personalized)
                 .For(aid)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x40, 0x0F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x40, 0x0F, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
 
-            apdus = SetStatusCommand.Build
+            apdu = SetStatusCommand.Build
                 .SetApplicationStatus()
                 .To(ApplicationLifeCycleCoding.Selectable)
                 .For(aid)
                 .AsApdu();
 
-            apdus.First().Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x60, 0x07, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
+            apdu.Buffer.Should().BeEquivalentTo(new byte[] { 0x80, 0xF0, 0x60, 0x07, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00 });
         }
 
         [TestMethod]
@@ -239,7 +238,7 @@ namespace GlobalPlatform.NET.Tests
                 .WithP1(0x10)
                 .StoreData(data)
                 .WithBlockSize(blockSize)
-                .AsApdu()
+                .AsApdus()
                 .ToList();
 
             apdus.First().Buffer.Take(5).Should().BeEquivalentTo(new byte[] { 0x80, 0xE2, 0x10, 0x00, blockSize });

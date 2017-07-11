@@ -15,29 +15,27 @@ namespace GlobalPlatform.NET.Tests
             const byte keyVersion = 0x01;
             byte[] hostChallenge;
 
-            var apdus = InitializeUpdateCommand.Build
+            var apdu = InitializeUpdateCommand.Build
                 .WithKeyVersion(keyVersion)
                 .WithHostChallenge(out hostChallenge)
-                .AsApdu()
-                .ToList();
+                .AsApdu();
 
-            apdus.First().Buffer.Take(4).Should().BeEquivalentTo(new byte[] { 0x80, 0x50, keyVersion, 0x00 });
-            apdus.First().Lc.Should().Be(0x08);
-            apdus.First().CommandData.Should().BeEquivalentTo(hostChallenge);
-            apdus.First().Le.First().Should().Be(0x00);
+            apdu.Buffer.Take(4).Should().BeEquivalentTo(new byte[] { 0x80, 0x50, keyVersion, 0x00 });
+            apdu.Lc.Should().Be(0x08);
+            apdu.CommandData.Should().BeEquivalentTo(hostChallenge);
+            apdu.Le.First().Should().Be(0x00);
 
             hostChallenge = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 };
 
-            apdus = InitializeUpdateCommand.Build
+            apdu = InitializeUpdateCommand.Build
                 .WithKeyVersion(keyVersion)
                 .WithHostChallenge(hostChallenge)
-                .AsApdu()
-                .ToList();
+                .AsApdu();
 
-            apdus.First().Buffer.Take(4).Should().BeEquivalentTo(new byte[] { 0x80, 0x50, keyVersion, 0x00 });
-            apdus.First().Lc.Should().Be(0x08);
-            apdus.First().CommandData.Should().BeEquivalentTo(hostChallenge);
-            apdus.First().Le.First().Should().Be(0x00);
+            apdu.Buffer.Take(4).Should().BeEquivalentTo(new byte[] { 0x80, 0x50, keyVersion, 0x00 });
+            apdu.Lc.Should().Be(0x08);
+            apdu.CommandData.Should().BeEquivalentTo(hostChallenge);
+            apdu.Le.First().Should().Be(0x00);
         }
     }
 }

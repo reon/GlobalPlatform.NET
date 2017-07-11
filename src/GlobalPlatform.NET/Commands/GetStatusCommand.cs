@@ -28,7 +28,7 @@ namespace GlobalPlatform.NET.Commands
     /// The GET STATUS command is used to retrieve Issuer Security Domain, Executable Load File,
     /// Executable Module, Application or Security Domain Life Cycle status information according to
     /// a given match/search criteria.
-    /// <para>Based on section 11.4 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// <para> Based on section 11.4 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
     public class GetStatusCommand : CommandBase<GetStatusCommand, IGetStatusScopePicker>,
         IGetStatusScopePicker,
@@ -55,7 +55,7 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public override IEnumerable<Apdu> AsApdu()
+        public override Apdu AsApdu()
         {
             var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetStatus, this.P1, this.P2, 0x00);
 
@@ -65,7 +65,7 @@ namespace GlobalPlatform.NET.Commands
 
             apdu.CommandData = data.ToArray();
 
-            yield return apdu;
+            return apdu;
         }
     }
 }

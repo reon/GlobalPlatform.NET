@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-
-namespace GlobalPlatform.NET.Commands.Interfaces
+﻿namespace GlobalPlatform.NET.Commands.Interfaces
 {
     public interface IApduBuilder
     {
-        IEnumerable<Apdu> AsApdu();
+        Apdu AsApdu();
 
-        IEnumerable<byte[]> AsBytes();
+        byte[] AsBytes();
     }
 }

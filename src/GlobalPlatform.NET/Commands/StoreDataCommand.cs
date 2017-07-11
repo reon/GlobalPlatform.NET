@@ -1,5 +1,4 @@
-﻿using System;
-using GlobalPlatform.NET.Commands.Abstractions;
+﻿using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
@@ -18,9 +17,9 @@ namespace GlobalPlatform.NET.Commands
         IStoreDataBlockSizePicker StoreData(byte[] data);
     }
 
-    public interface IStoreDataBlockSizePicker : IApduBuilder
+    public interface IStoreDataBlockSizePicker : IMultiApduBuilder
     {
-        IApduBuilder WithBlockSize(byte blockSize);
+        IMultiApduBuilder WithBlockSize(byte blockSize);
     }
 
     /// <summary>
@@ -42,9 +41,9 @@ namespace GlobalPlatform.NET.Commands
     /// the Personalization interface) to which the Security Domain shall forward subsequently
     /// received STORE DATA commands.
     /// </para>
-    /// <para>Based on section 11.11 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// <para> Based on section 11.11 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
-    public class StoreDataCommand : CommandBase<StoreDataCommand, IStoreDataP1Picker>,
+    public class StoreDataCommand : MultiCommandBase<StoreDataCommand, IStoreDataP1Picker>,
         IStoreDataP1Picker,
         IStoreDataPicker,
         IStoreDataBlockSizePicker
@@ -66,14 +65,14 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public IApduBuilder WithBlockSize(byte blockSize)
+        public IMultiApduBuilder WithBlockSize(byte blockSize)
         {
             this.blockSize = blockSize;
 
             return this;
         }
 
-        public override IEnumerable<Apdu> AsApdu()
+        public override IEnumerable<Apdu> AsApdus()
         {
             var chunks = this.data.Split(this.blockSize).ToList();
 

@@ -35,7 +35,7 @@ namespace GlobalPlatform.NET.Commands
     /// constructed, or a set of data objects. Reference control parameters P1 and P2 coding is used
     /// to define the specific data object tag. The data object may contain information pertaining to
     /// a key.
-    /// <para>Based on section 11.3 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// <para> Based on section 11.3 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
     public class GetDataCommand : CommandBase<GetDataCommand, IGetDataObjectPicker>,
         IGetDataObjectPicker,
@@ -58,7 +58,7 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public override IEnumerable<Apdu> AsApdu()
+        public override Apdu AsApdu()
         {
             var bytes = BitConverter.GetBytes((ushort)this.getDataObject);
 
@@ -70,7 +70,7 @@ namespace GlobalPlatform.NET.Commands
             byte p1 = bytes.First();
             byte p2 = bytes.Last();
 
-            yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetData, p1, p2, this.tagList);
+            return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.GetData, p1, p2, this.tagList);
         }
     }
 }

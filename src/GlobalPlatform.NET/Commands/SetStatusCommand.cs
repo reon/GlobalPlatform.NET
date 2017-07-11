@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Reference;
@@ -35,8 +36,9 @@ namespace GlobalPlatform.NET.Commands
     }
 
     /// <summary>
-    /// The SET STATUS command shall be used to modify the card Life Cycle State or the Application Life Cycle State.
-    /// <para>Based on section 11.10 of the v2.3 GlobalPlatform Card Specification.</para>
+    /// The SET STATUS command shall be used to modify the card Life Cycle State or the Application
+    /// Life Cycle State.
+    /// <para> Based on section 11.10 of the v2.3 GlobalPlatform Card Specification. </para>
     /// </summary>
     public class SetStatusCommand : CommandBase<SetStatusCommand, ISetStatusScopePicker>,
         ISetStatusScopePicker,
@@ -95,20 +97,21 @@ namespace GlobalPlatform.NET.Commands
             return this;
         }
 
-        public override IEnumerable<Apdu> AsApdu()
+        public override Apdu AsApdu()
         {
             this.P1 = (byte)this.scope;
 
             switch (this.scope)
             {
                 case Scope.IssuerSecurityDomain:
-                    yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.SetStatus, this.P1, this.P2);
-                    break;
+                    return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.SetStatus, this.P1, this.P2);
 
                 case Scope.SecurityDomain:
                 case Scope.Application:
-                    yield return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.SetStatus, this.P1, this.P2, this.application);
-                    break;
+                    return Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.SetStatus, this.P1, this.P2, this.application);
+
+                default:
+                    throw new NotSupportedException("Scope not supported.");
             }
         }
 
