@@ -1,10 +1,11 @@
-﻿using System;
-using GlobalPlatform.NET.Commands.Abstractions;
+﻿using GlobalPlatform.NET.Commands.Abstractions;
 using GlobalPlatform.NET.Commands.Interfaces;
 using GlobalPlatform.NET.Extensions;
 using GlobalPlatform.NET.Reference;
+using GlobalPlatform.NET.SecureChannel.SCP02.Cryptography;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace GlobalPlatform.NET.Commands
 {
@@ -48,9 +49,9 @@ namespace GlobalPlatform.NET.Commands
     {
         private byte keyVersion;
         private byte keyIdentifier;
-        private (KeyTypeCoding KeyType, byte[] Key) key1;
-        private (KeyTypeCoding KeyType, byte[] Key) key2;
-        private (KeyTypeCoding KeyType, byte[] Key) key3;
+        private (KeyTypeCoding KeyType, byte[] Value) key1;
+        private (KeyTypeCoding KeyType, byte[] Value) key2;
+        private (KeyTypeCoding KeyType, byte[] Value) key3;
         private byte[] kek;
 
         public IPutKeyIdentifierPicker WithKeyVersion(byte keyVersion)
@@ -99,28 +100,23 @@ namespace GlobalPlatform.NET.Commands
         {
             var apdu = Apdu.Build(ApduClass.GlobalPlatform, ApduInstruction.PutKey, this.keyVersion, this.keyIdentifier, 0x00);
 
-            var data = new List<byte>();
+            var data = new List<byte> { this.keyVersion };
 
-            data.Add(this.keyVersion);
+            data.Add((byte)this.key1.KeyType);
+            data.AddRangeWithLength(Crypto.TripleDes.Encrypt(this.key1.Value, this.kek, CipherMode.ECB));
+            data.Add(0x00);
 
-            if (this.key1.Key.Any())
-            {
-                data.Add((byte)this.key1.KeyType);
-                data.AddRangeWithLength(this.key1.Key);
-                data.Add(0x00);
-            }
-
-            if (this.key2.Key.Any())
+            if (this.key2.Value.Any())
             {
                 data.Add((byte)this.key2.KeyType);
-                data.AddRangeWithLength(this.key2.Key);
+                data.AddRangeWithLength(Crypto.TripleDes.Encrypt(this.key2.Value, this.kek, CipherMode.ECB));
                 data.Add(0x00);
             }
 
-            if (this.key3.Key.Any())
+            if (this.key3.Value.Any())
             {
                 data.Add((byte)this.key3.KeyType);
-                data.AddRangeWithLength(this.key3.Key);
+                data.AddRangeWithLength(Crypto.TripleDes.Encrypt(this.key3.Value, this.kek, CipherMode.ECB));
                 data.Add(0x00);
             }
 

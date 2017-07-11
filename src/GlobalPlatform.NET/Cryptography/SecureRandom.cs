@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace GlobalPlatform.NET.Cryptography
 {
-    public static class SecureRandom
+    internal static class SecureRandom
     {
         public static byte[] GetBytes(int length)
         {
